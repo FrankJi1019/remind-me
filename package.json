@@ -28,7 +28,8 @@
     "@aws-sdk/client-ses": "^3.1053.0",
     "@aws-sdk/client-sesv2": "^3.1053.0",
     "@google-cloud/local-auth": "^2.1.1",
+    "@googleapis/calendar": "^14.3.0",
     "@notionhq/client": "^5.22.0",
-    "googleapis": "^105.0.0"
+    "dotenv": "^17.4.2"
   }
 }

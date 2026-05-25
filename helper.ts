@@ -1,11 +1,13 @@
-import path from 'node:path';
-import process from 'node:process';
+import 'dotenv/config';
+import { calendar_v3, auth as googleAuth } from '@googleapis/calendar';
 import { Client } from "@notionhq/client";
-import { authenticate } from '@google-cloud/local-auth';
-import { google } from "googleapis";
 
-const NOTION_API_KEY = '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'
-const TODO_DATA_SOURCE_ID = 'd456cb78-bed9-480f-a967-0e749ee6eeff'
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID!
+const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET!
+const GOOGLE_REFRESH_TOKEN = process.env.GOOGLE_REFRESH_TOKEN!
+
+const NOTION_API_KEY = process.env.NOTION_API_KEY!
+const TODO_DATA_SOURCE_ID = process.env.TODO_DATA_SOURCE_ID!
 
 async function getNotionTodos() {
     const notion = new Client({
@@ -34,36 +36,11 @@ async function getNotionTodos() {
     return todos
 }
 
-import fs from 'node:fs';
-
-const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
-const CREDENTIALS_PATH = path.join(process.cwd(), 'credentials.json')
-const TOKEN_PATH = path.join(process.cwd(), 'token.json')
-
-async function getAuthorizedClient() {
-    const content = fs.readFileSync(CREDENTIALS_PATH, 'utf-8')
-    const { installed } = JSON.parse(content)
-    const { client_id, client_secret, redirect_uris } = installed
-    const oauth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0])
-
-    if (fs.existsSync(TOKEN_PATH)) {
-        const token = JSON.parse(fs.readFileSync(TOKEN_PATH, 'utf-8'))
-        oauth2Client.setCredentials(token)
-        return oauth2Client
-    }
-
-    const auth = await authenticate({
-        scopes: SCOPES,
-        keyfilePath: CREDENTIALS_PATH,
-    })
-    fs.writeFileSync(TOKEN_PATH, JSON.stringify(auth.credentials))
-    return auth
-}
-
 async function getGoogleCalendarEvents() {
-    const auth = await getAuthorizedClient()
+    const oauth2Client = new googleAuth.OAuth2(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET)
+    oauth2Client.setCredentials({ refresh_token: GOOGLE_REFRESH_TOKEN })
 
-    const calendar = google.calendar({ version: 'v3', auth })
+    const calendar = new calendar_v3.Calendar({ auth: oauth2Client })
 
     const response = await calendar.events.list({
         calendarId: 'primary',
@@ -83,8 +60,9 @@ async function getGoogleCalendarEvents() {
 }
 
 async function main() {
-    // const todos = await getNotionTodos()
+    const todos = await getNotionTodos()
     const events = await getGoogleCalendarEvents()
+    console.log(todos)
     console.log(events)
 }
 
