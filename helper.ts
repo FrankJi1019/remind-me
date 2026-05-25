@@ -34,14 +34,34 @@ async function getNotionTodos() {
     return todos
 }
 
+import fs from 'node:fs';
+
 const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
 const CREDENTIALS_PATH = path.join(process.cwd(), 'credentials.json')
+const TOKEN_PATH = path.join(process.cwd(), 'token.json')
 
-async function getGoogleCalendarEvents() {
+async function getAuthorizedClient() {
+    const content = fs.readFileSync(CREDENTIALS_PATH, 'utf-8')
+    const { installed } = JSON.parse(content)
+    const { client_id, client_secret, redirect_uris } = installed
+    const oauth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0])
+
+    if (fs.existsSync(TOKEN_PATH)) {
+        const token = JSON.parse(fs.readFileSync(TOKEN_PATH, 'utf-8'))
+        oauth2Client.setCredentials(token)
+        return oauth2Client
+    }
+
     const auth = await authenticate({
         scopes: SCOPES,
         keyfilePath: CREDENTIALS_PATH,
     })
+    fs.writeFileSync(TOKEN_PATH, JSON.stringify(auth.credentials))
+    return auth
+}
+
+async function getGoogleCalendarEvents() {
+    const auth = await getAuthorizedClient()
 
     const calendar = google.calendar({ version: 'v3', auth })
 
