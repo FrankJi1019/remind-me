@@ -55,6 +55,9 @@ export const handler = async (): Promise<{
     await invokeLambdaFunction("assemble-email"),
     getParameters(),
   ]);
+
+  const serializedEmailContent = emailContent instanceof Object ? JSON.stringify(emailContent) : emailContent
+
   await ses.send(
     new SendEmailCommand({
       FromEmailAddress: FROM_EMAIL,
@@ -62,7 +65,7 @@ export const handler = async (): Promise<{
       Content: {
         Simple: {
           Subject: { Data: "Good morning! ☀️" },
-          Body: { Html: { Data: emailContent } },
+          Body: { Html: { Data: serializedEmailContent } },
         },
       },
     }),
@@ -70,3 +73,7 @@ export const handler = async (): Promise<{
 
   return { statusCode: 200, body: "[SUCCESS] Email sent!" };
 };
+
+(async function() {
+  await handler()
+})()

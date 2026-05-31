@@ -5,10 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build-email-sending": "esbuild send-email.ts --bundle --platform=node --target=node22 --outfile=dist/index.js",
-    "build-todo": "esbuild fetch-todo-items.ts --bundle --platform=node --target=node22 --outfile=dist/index.js",
-    "build-calender": "esbuild fetch-calender.ts --bundle --platform=node --target=node22 --outfile=dist/index.js",
-    "build-email-assembling": "esbuild build-email.ts --bundle --platform=node --target=node22 --outfile=dist/index.js"
+    "build:remindme": "esbuild remind-me.ts --bundle --platform=node --target=node22 --outfile=dist/index.js",
+    "build:todo": "esbuild get-todos.ts --bundle --platform=node --target=node22 --outfile=dist/index.js",
+    "build:calender": "esbuild get-calendar.ts --bundle --platform=node --target=node22 --outfile=dist/index.js",
+    "build:assembleemail": "esbuild assemble-email.ts --bundle --platform=node --target=node22 --outfile=dist/index.js"
   },
   "repository": {
     "type": "git",

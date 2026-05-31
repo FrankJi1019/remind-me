@@ -45,12 +45,16 @@ async function getGoogleCalendarEvents() {
 
   const calendar = new calendar_v3.Calendar({ auth: oauth2Client });
 
+  const now = new Date();
+  const oneMonthLater = new Date();
+  oneMonthLater.setMonth(now.getMonth() + 1);
+
   const response = await calendar.events.list({
     calendarId: "primary",
-    timeMin: new Date().toISOString(),
     singleEvents: true,
-    maxResults: 10,
     orderBy: "startTime",
+    timeMin: now.toISOString(),
+    timeMax: oneMonthLater.toISOString(),
   });
 
   const events = (response.data.items || []).map((event) => ({
@@ -62,4 +66,4 @@ async function getGoogleCalendarEvents() {
   return events;
 }
 
-export { getGoogleCalendarEvents }
+export { getGoogleCalendarEvents };

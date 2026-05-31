@@ -211,7 +211,7 @@ function buildEmail(todos: Array<Todo>, events: Array<Event>) {
                         ${activeTodosHtml}
                     </table>
                     ${
-                      doneTodos.length
+                      doneTodos.length && false
                         ? `
                     <h3 style="margin:16px 0 8px;font-size:13px;color:#9ca3af;font-weight:500;">✅ 已完成</h3>
                     <table width="100%" cellpadding="0" cellspacing="0" class="data-table" style="border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;opacity:0.6;">
@@ -232,7 +232,7 @@ function buildEmail(todos: Array<Todo>, events: Array<Event>) {
 
 async function assembleEmail() {
   const [todos, events] = await Promise.all([
-    invokeLambdaFunction("get-notion-todos"),
+    invokeLambdaFunction("get-todos"),
     invokeLambdaFunction("get-calendar"),
   ]);
   const email = buildEmail(todos, events);

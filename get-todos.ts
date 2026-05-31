@@ -33,7 +33,7 @@ async function getParameters() {
   return params;
 }
 
-async function getNotionTodos() {
+async function getTodos() {
   const { NOTION_API_KEY, TODO_DATA_SOURCE_ID } = await getParameters();
 
   const notion = new Client({
@@ -69,4 +69,4 @@ async function getNotionTodos() {
   return todos;
 }
 
-export { getNotionTodos };
+export { getTodos };
