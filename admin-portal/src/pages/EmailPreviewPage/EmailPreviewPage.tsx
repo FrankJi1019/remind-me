@@ -9,8 +9,8 @@ export interface EmailPreviewPageProps {
 
 const EmailPreviewPage: FC<EmailPreviewPageProps> = ({ email, isSendingEmail, onSendNow }) => {
   return (
-    <div>
-      <div className="flex items-center justify-between mb-4">
+    <div className="flex flex-col h-full overflow-hidden">
+      <div className="flex items-center justify-between mb-4 shrink-0">
         <h2 className="text-xl font-semibold text-slate-800">Email Preview</h2>
         <button
           onClick={onSendNow}
@@ -21,12 +21,12 @@ const EmailPreviewPage: FC<EmailPreviewPageProps> = ({ email, isSendingEmail, on
         </button>
       </div>
 
-      <StandardContainer>
-        <p className="text-sm text-slate-500 mb-2">Subject</p>
-        <p className="text-sm font-medium text-slate-800 mb-4">Good morning! ☀️</p>
-        <p className="text-sm text-slate-500 mb-2">Preview</p>
+      <StandardContainer className="flex flex-col min-h-0 flex-1">
+        <p className="text-sm text-slate-500 mb-2 shrink-0">Subject</p>
+        <p className="text-sm font-medium text-slate-800 mb-4 shrink-0">Good morning! ☀️</p>
+        <p className="text-sm text-slate-500 mb-2 shrink-0">Preview</p>
         <div
-          className="border border-slate-200 rounded-md p-4 bg-slate-50"
+          className="border border-slate-200 rounded-md p-4 bg-slate-50 overflow-auto min-h-0 flex-1"
           dangerouslySetInnerHTML={{ __html: email }}
         />
       </StandardContainer>

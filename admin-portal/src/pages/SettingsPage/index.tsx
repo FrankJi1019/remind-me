@@ -1,13 +1,14 @@
 import type { FC } from "react"
 import { useCallback, useMemo } from "react"
 import SettingsPage from "./SettingsPage"
+import PageLoader from "../../components/PageLoader"
 import { useNotification } from "../../providers/NotificationProvider"
 import { useFetchSsmParameters, useUpdateSsmParameterMutation } from "../../api-hooks/settings"
 
 const SettingsPageBuilder: FC = () => {
   const notify = useNotification()
   
-  const { data: rawSsmParams, refetch: refetchSsmParams } = useFetchSsmParameters()
+  const { data: rawSsmParams, isLoading, refetch: refetchSsmParams } = useFetchSsmParameters()
   const { mutateAsync: updateParam } = useUpdateSsmParameterMutation()
 
   const ssmParams = useMemo(() => {
@@ -19,6 +20,8 @@ const SettingsPageBuilder: FC = () => {
     await refetchSsmParams()
     notify(`Saved ${updated.key}`, { type: "success" })
   }, [updateParam, notify])
+
+  if (isLoading) return <PageLoader />
 
   return <SettingsPage parameters={ssmParams} onSave={saveHandler} />
 }
