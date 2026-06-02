@@ -21,5 +21,4 @@ export interface Schedule {
 export interface SsmParameter {
   key: string
   value: string
-  isSecret: boolean
 }

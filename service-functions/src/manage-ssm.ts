@@ -17,19 +17,10 @@ async function getParameters() {
 
   const params = response.Parameters?.map((parameter) => {
     return {
-      name: parameter.Name?.split("/").pop(),
+      key: parameter.Name?.split("/").pop(),
       value: parameter.Value,
     };
-  }).reduce(
-    (acc, curr) => {
-      if (!(curr.name && curr.value)) {
-        return acc;
-      }
-      acc[curr.name] = curr.value;
-      return acc;
-    },
-    {} as Record<string, string>,
-  );
+  })
 
   return params;
 }

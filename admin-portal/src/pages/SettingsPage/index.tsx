@@ -1,20 +1,26 @@
 import type { FC } from "react"
-import { useCallback } from "react"
+import { useCallback, useMemo } from "react"
 import SettingsPage from "./SettingsPage"
 import { useNotification } from "../../providers/NotificationProvider"
 import { useFetchSsmParameters, useUpdateSsmParameterMutation } from "../../api-hooks/settings"
 
 const SettingsPageBuilder: FC = () => {
   const notify = useNotification()
-  const { data: params, setData } = useFetchSsmParameters()
-  const { mutate: updateParam } = useUpdateSsmParameterMutation(setData)
+  
+  const { data: rawSsmParams, refetch: refetchSsmParams } = useFetchSsmParameters()
+  const { mutateAsync: updateParam } = useUpdateSsmParameterMutation()
 
-  const saveHandler = useCallback((updated: Parameters<typeof updateParam>[0]) => {
-    updateParam(updated)
+  const ssmParams = useMemo(() => {
+    return rawSsmParams || []
+  }, [rawSsmParams])
+
+  const saveHandler = useCallback(async (updated: Parameters<typeof updateParam>[0]) => {
+    await updateParam(updated)
+    await refetchSsmParams()
     notify(`Saved ${updated.key}`, { type: "success" })
   }, [updateParam, notify])
 
-  return <SettingsPage parameters={params} onSave={saveHandler} />
+  return <SettingsPage parameters={ssmParams} onSave={saveHandler} />
 }
 
 export default SettingsPageBuilder
