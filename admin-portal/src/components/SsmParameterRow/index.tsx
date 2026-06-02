@@ -8,6 +8,11 @@ export interface SsmParameterRowProps {
   onSave: (param: SsmParameter) => void
 }
 
+const maskValue = (value: string): string => {
+  if (value.length <= 10) return "*****"
+  return `${value.slice(0, 5)}*****${value.slice(-5)}`
+}
+
 const SsmParameterRow: FC<SsmParameterRowProps> = ({ parameter, onSave }) => {
   const [isEditing, setIsEditing] = useState(false)
   const [editValue, setEditValue] = useState("")
@@ -47,7 +52,7 @@ const SsmParameterRow: FC<SsmParameterRowProps> = ({ parameter, onSave }) => {
               </div>
             </div>
           ) : (
-            <p className="text-sm text-slate-700 mt-0.5 font-mono break-all">{parameter.value}</p>
+            <p className="text-sm text-slate-700 mt-0.5 font-mono break-all">{maskValue(parameter.value)}</p>
           )}
         </div>
         {!isEditing && (

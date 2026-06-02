@@ -7,14 +7,14 @@ import { useFetchEmailPreview, useSendEmailMutation } from "../../api-hooks/emai
 const EmailPreviewPageBuilder: FC = () => {
   const notify = useNotification()
   const { data: email } = useFetchEmailPreview()
-  const { mutate: sendEmail } = useSendEmailMutation()
+  const { mutateAsync: sendEmail, isPending: isSendingEmail } = useSendEmailMutation()
 
   const sendNowHandler = useCallback(async () => {
     await sendEmail()
     notify("Email sent successfully!", { type: "success" })
   }, [sendEmail, notify])
 
-  return <EmailPreviewPage email={email} onSendNow={sendNowHandler} />
+  return <EmailPreviewPage email={email || ""} isSendingEmail={isSendingEmail} onSendNow={sendNowHandler} />
 }
 
 export default EmailPreviewPageBuilder

@@ -40,11 +40,11 @@ export const mockSchedule: Schedule = {
 }
 
 export const mockSsmParameters: SsmParameter[] = [
-  { key: "/remind-me/GOOGLE_CLIENT_ID", value: "123456789.apps.googleusercontent.com", isSecret: false },
-  { key: "/remind-me/GOOGLE_CLIENT_SECRET", value: "ksf5hf****nbfdks", isSecret: true },
-  { key: "/remind-me/GOOGLE_REFRESH_TOKEN", value: "1//04x****9dkWs", isSecret: true },
-  { key: "/remind-me/NOTION_API_KEY", value: "ntn_5j****kL9m2", isSecret: true },
-  { key: "/remind-me/TODO_DATA_SOURCE_ID", value: "abc123def456", isSecret: false },
-  { key: "/remind-me/FROM_EMAIL", value: "briefing@example.com", isSecret: false },
-  { key: "/remind-me/TO_EMAIL", value: "frank@example.com", isSecret: false },
+  { key: "/remind-me/GOOGLE_CLIENT_ID", value: "123456789.apps.googleusercontent.com" },
+  { key: "/remind-me/GOOGLE_CLIENT_SECRET", value: "ksf5hfabcdefnbfdks" },
+  { key: "/remind-me/GOOGLE_REFRESH_TOKEN", value: "1//04xabcdef9dkWs" },
+  { key: "/remind-me/NOTION_API_KEY", value: "ntn_5jabcdefkL9m2" },
+  { key: "/remind-me/TODO_DATA_SOURCE_ID", value: "abc123def456" },
+  { key: "/remind-me/FROM_EMAIL", value: "briefing@example.com" },
+  { key: "/remind-me/TO_EMAIL", value: "frank@example.com" },
 ]

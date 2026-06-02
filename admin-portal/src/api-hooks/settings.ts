@@ -6,7 +6,7 @@ export const useFetchSsmParameters = () => {
     queryKey: ['fetch-ssm-params'],
     queryFn: async () => {
       console.log(123)
-      const {data} = await apiClient.get('settings')
+      const { data } = await apiClient.get('settings')
       return data
     }
   })
@@ -17,8 +17,8 @@ export const useFetchSsmParameters = () => {
 export const useUpdateSsmParameterMutation = () => {
 
   const mutation = useMutation({
-    mutationFn: async ({key, value}: {key: string, value: string}) => {
-      return await apiClient.put(`settings/${key}`, {value})
+    mutationFn: async ({ key, value }: { key: string, value: string }) => {
+      return await apiClient.put(`settings/${key}`, { value })
     }
   })
 
