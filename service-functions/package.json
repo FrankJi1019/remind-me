@@ -7,17 +7,19 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "yarn build:remindme && yarn build:todo && yarn build:calendar && yarn build:assembleemail",
     "build:remindme": "esbuild src/remind-me.ts --bundle --platform=node --target=node22 --outfile=dist/remind-me/index.js",
-    "build:todo": "esbuild src/get-todos.ts --bundle --platform=node --target=node22 --outfile=dist/get-todos/index.js",
-    "build:calendar": "esbuild src/get-calendar.ts --bundle --platform=node --target=node22 --outfile=dist/get-calendar/index.js",
-    "build:assembleemail": "esbuild src/assemble-email.ts --bundle --platform=node --target=node22 --outfile=dist/assemble-email/index.js",
     "deploy:remindme": "cd dist/remind-me && zip function.zip index.js && aws lambda update-function-code --function-name remind-me --zip-file fileb://function.zip",
-    "deploy:todo": "cd dist/get-todos && zip function.zip index.js && aws lambda update-function-code --function-name get-todos --zip-file fileb://function.zip",
-    "deploy:calendar": "cd dist/get-calendar && zip function.zip index.js && aws lambda update-function-code --function-name get-calendar --zip-file fileb://function.zip",
-    "deploy:assembleemail": "cd dist/assemble-email && zip function.zip index.js && aws lambda update-function-code --function-name assemble-email --zip-file fileb://function.zip",
     "invoke:remindme": "aws lambda invoke --function-name remind-me /dev/stdout",
+    "build:todo": "esbuild src/get-todos.ts --bundle --platform=node --target=node22 --outfile=dist/get-todos/index.js",
+    "deploy:todo": "cd dist/get-todos && zip function.zip index.js && aws lambda update-function-code --function-name get-todos --zip-file fileb://function.zip",
     "invoke:todo": "aws lambda invoke --function-name get-todos /dev/stdout",
+    "build:calendar": "esbuild src/get-calendar.ts --bundle --platform=node --target=node22 --outfile=dist/get-calendar/index.js",
+    "deploy:calendar": "cd dist/get-calendar && zip function.zip index.js && aws lambda update-function-code --function-name get-calendar --zip-file fileb://function.zip",
     "invoke:calendar": "aws lambda invoke --function-name get-calendar /dev/stdout",
-    "invoke:assembleemail": "aws lambda invoke --function-name assemble-email /dev/stdout"
+    "build:assembleemail": "esbuild src/assemble-email.ts --bundle --platform=node --target=node22 --outfile=dist/assemble-email/index.js",
+    "deploy:assembleemail": "cd dist/assemble-email && zip function.zip index.js && aws lambda update-function-code --function-name assemble-email --zip-file fileb://function.zip",
+    "invoke:assembleemail": "aws lambda invoke --function-name assemble-email /dev/stdout",
+    "build:managessm": "esbuild src/manage-ssm.ts --bundle --platform=node --target=node22 --outfile=dist/manage-ssm/index.js",
+    "deploy:managessm": "cd dist/manage-ssm && zip function.zip index.js && aws lambda update-function-code --function-name manage-ssm --zip-file fileb://function.zip"
   },
   "repository": {
     "type": "git",
@@ -32,6 +34,7 @@
   },
   "homepage": "https://github.com/FrankJi1019/remin-me#readme",
   "devDependencies": {
+    "@types/aws-lambda": "^8.10.161",
     "@types/node": "^25.9.1",
     "esbuild": "^0.28.0",
     "typescript": "^6.0.3"

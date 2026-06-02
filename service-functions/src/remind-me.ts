@@ -73,7 +73,3 @@ export const handler = async (): Promise<{
 
   return { statusCode: 200, body: "[SUCCESS] Email sent!" };
 };
-
-(async function() {
-  await handler()
-})()
