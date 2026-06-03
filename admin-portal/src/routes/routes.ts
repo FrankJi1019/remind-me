@@ -1,7 +1,7 @@
 import { PathNavigator } from "./PathNavigator"
 
 export class Routes {
-  public static DAILY_JOBS = new PathNavigator("/")
+  public static DAILY_TASKS = new PathNavigator("/")
   public static EMAIL_PREVIEW = new PathNavigator("/email")
   public static SCHEDULE = new PathNavigator("/schedule")
   public static SETTINGS = new PathNavigator("/settings")

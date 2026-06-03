@@ -1,8 +1,8 @@
-export interface DailyJob {
+export interface DailyTask {
   id: string
-  name: string
-  icon: string
-  isCompleted: boolean
+  content: string
+  createdOn: Date
+  completionDates: Array<Date>
 }
 
 export interface EmailPreview {

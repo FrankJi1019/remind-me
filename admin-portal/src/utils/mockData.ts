@@ -1,6 +1,6 @@
-import type { DailyJob, EmailPreview, Schedule, SsmParameter } from "../types/domain"
+import type { DailyTask, EmailPreview, Schedule, SsmParameter } from "../types/domain"
 
-export const mockDailyJobs: DailyJob[] = [
+export const mockDailyTasks: DailyTask[] = [
   { id: "1", name: "Drink 8 glasses of water", icon: "💧", isCompleted: false },
   { id: "2", name: "30 minutes exercise", icon: "🏃", isCompleted: true },
   { id: "3", name: "Read for 20 minutes", icon: "📖", isCompleted: false },

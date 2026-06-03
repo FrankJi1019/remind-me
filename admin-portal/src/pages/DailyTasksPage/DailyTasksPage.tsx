@@ -1,37 +1,38 @@
 import type { FC } from "react"
 import { useState } from "react"
 import StandardContainer from "../../containers/StandardContainer"
-import type { DailyJob } from "../../types/domain"
+import type { DailyTask } from "../../types/domain"
+import DailyTaskItem from "../../components/DailyTaskItem"
 
-export interface DailyJobsPageProps {
-  jobs: DailyJob[]
+export interface DailyTasksPageProps {
+  tasks: DailyTask[]
   completedCount: number
   onToggleComplete: (id: string) => void
-  onAdd: (job: Omit<DailyJob, "id" | "isCompleted">) => void
+  onAdd: (task: string) => void
   onDelete: (id: string) => void
 }
 
-const DailyJobsPage: FC<DailyJobsPageProps> = ({ jobs, completedCount, onToggleComplete, onAdd, onDelete }) => {
+const DailyTasksPage: FC<DailyTasksPageProps> = ({ tasks, completedCount, onToggleComplete, onAdd, onDelete }) => {
   const [isAdding, setIsAdding] = useState(false)
   const [name, setName] = useState("")
   const [icon, setIcon] = useState("")
 
   const handleAdd = () => {
     if (!name.trim()) return
-    onAdd({ name, icon: icon || "✅" })
+    onAdd(name)
     setName("")
     setIcon("")
     setIsAdding(false)
   }
 
-  const progress = jobs.length > 0 ? Math.round((completedCount / jobs.length) * 100) : 0
+  const progress = tasks.length > 0 ? Math.round((completedCount / tasks.length) * 100) : 0
 
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
         <div>
           <h2 className="text-xl font-semibold text-slate-800">Daily Habits</h2>
-          <p className="text-sm text-slate-500 mt-0.5">{completedCount}/{jobs.length} completed today</p>
+          <p className="text-sm text-slate-500 mt-0.5">{completedCount}/{tasks.length} completed today</p>
         </div>
         <button
           onClick={() => setIsAdding(!isAdding)}
@@ -75,36 +76,17 @@ const DailyJobsPage: FC<DailyJobsPageProps> = ({ jobs, completedCount, onToggleC
       )}
 
       <div className="space-y-2">
-        {jobs.map((job) => (
-          <StandardContainer key={job.id}>
-            <div className="flex items-center gap-3 min-h-[44px]">
-              <button
-                onClick={() => onToggleComplete(job.id)}
-                className={`w-7 h-7 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${
-                  job.isCompleted
-                    ? "bg-indigo-500 border-indigo-500 text-white"
-                    : "border-slate-300 hover:border-indigo-400 active:border-indigo-500"
-                }`}
-                aria-label={`Mark "${job.name}" as ${job.isCompleted ? "incomplete" : "complete"}`}
-              >
-                {job.isCompleted && <span className="text-xs">✓</span>}
-              </button>
-              <span className="text-lg">{job.icon}</span>
-              <span className={`text-sm flex-1 ${job.isCompleted ? "line-through text-slate-400" : "text-slate-800"}`}>
-                {job.name}
-              </span>
-              <button
-                onClick={() => onDelete(job.id)}
-                className="text-xs text-red-400 hover:text-red-600 active:text-red-700 px-2 py-1.5"
-              >
-                Remove
-              </button>
-            </div>
-          </StandardContainer>
+        {tasks.map((task) => (
+          <DailyTaskItem
+            key={task.id}
+            task={task}
+            onToggleComplete={onToggleComplete}
+            onDelete={onDelete}
+          />
         ))}
       </div>
     </div>
   )
 }
 
-export default DailyJobsPage
+export default DailyTasksPage
