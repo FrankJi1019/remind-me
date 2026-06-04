@@ -2,9 +2,9 @@ import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import {
   DeleteCommand,
   DynamoDBDocumentClient,
+  GetCommand,
   PutCommand,
   ScanCommand,
-  UpdateCommand,
 } from "@aws-sdk/lib-dynamodb";
 import { APIGatewayProxyEventV2 } from "aws-lambda";
 import { randomUUID } from "crypto";
@@ -20,13 +20,22 @@ type Task = {
 
 const dynamodb = DynamoDBDocumentClient.from(new DynamoDBClient());
 
+function isSameDay(date1: Date, date2: Date) {
+  const timeFormat: Intl.DateTimeFormatOptions = { 
+    timeZone: 'Pacific/Auckland', 
+    year: 'numeric', 
+    month: '2-digit', 
+    day: '2-digit' 
+  }
+  return date1.toLocaleDateString('en-CA', timeFormat) === date2.toLocaleDateString('en-CA', timeFormat)
+}
+
 async function getAllTasks() {
   const response = await dynamodb.send(
     new ScanCommand({
       TableName: tableName,
     })
   );
-
   return response;
 }
 
@@ -37,31 +46,35 @@ async function createTask(taskContent: string) {
     completionDates: [],
     fromDate: new Date().toISOString(),
   };
-
   const response = await dynamodb.send(
     new PutCommand({
       TableName: tableName,
       Item: task,
     })
   );
-
   return { response, task };
 }
 
-async function completeTask(id: string) {
+async function getTaskById(id: string) {
   const response = await dynamodb.send(
-    new UpdateCommand({
-      TableName: tableName,
-      Key: { id },
-      UpdateExpression: "SET completionDates = list_append(completionDates, :dates)",
-      ExpressionAttributeValues: {
-        ":dates": [new Date().toISOString()],
-      },
-      ReturnValues: "ALL_NEW",
-    })
-  );
+    new GetCommand({ TableName: tableName, Key: { id } })
+  )
+  const task = response.Item as any
+  return task
+}
 
-  return response;
+async function completeTask(task: Task, datetime: string, isComplete = true) {
+  const completionDates = task.completionDates
+  const existingDate = completionDates.find(date => isSameDay(new Date(date), new Date(datetime)))
+  if (existingDate) {
+    task.completionDates = completionDates.filter(date => date !== existingDate)
+  }
+  if (isComplete) {
+    task.completionDates.push(datetime)
+  }
+  await dynamodb.send(
+    new PutCommand({ TableName: tableName, Item: task })
+  )
 }
 
 async function deleteTask(id: string) {
@@ -71,7 +84,6 @@ async function deleteTask(id: string) {
       Key: { id },
     })
   );
-
   return response;
 }
 
@@ -105,7 +117,22 @@ async function handler(event: APIGatewayProxyEventV2) {
         body: JSON.stringify({ msg: "Error: Invalid path param" }),
       };
     }
-    const response = await completeTask(key);
+    const task = await getTaskById(key)
+    if (!task) {
+      return {
+        statusCode: 404,
+        body: JSON.stringify({msg: `Error: task not found with id ${key}`})
+      }
+    }
+    const body = JSON.parse(event.body || "{}");
+    const { isComplete, datetime } = body;
+    if (isComplete === undefined || !datetime) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ msg: "Error: Invalid payload structure" }),
+      };
+    }
+    const response = await completeTask(task, datetime, isComplete);
     return {
       statusCode: 201,
       body: JSON.stringify(response),

@@ -7,7 +7,7 @@ import DailyTaskItem from "../../components/DailyTaskItem"
 export interface DailyTasksPageProps {
   tasks: DailyTask[]
   completedCount: number
-  onToggleComplete: (id: string) => void
+  onToggleComplete: (id: string, isTaskCompleted: boolean) => void
   onAdd: (task: string) => void
   onDelete: (id: string) => void
 }

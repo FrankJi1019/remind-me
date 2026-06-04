@@ -20,19 +20,18 @@ const DailyTasksPageBuilder: FC = () => {
     await createTaskMutation.mutateAsync(task)
     await fetchTasks()
     notify("Daily task completed", {type: "success"})
-  }, [createTaskMutation, notify])
+  }, [createTaskMutation, fetchTasks, notify])
 
-  const completeTask = useCallback(async (id: string) => {
-    await completeTaskMutation.mutateAsync(id)
+  const completeTask = useCallback(async (id: string, isTaskComplete = true) => {
+    await completeTaskMutation.mutateAsync({id, isTaskComplete})
     await fetchTasks()
-    notify("Daily task completed", {type: "success"})
-  }, [completeTaskMutation, notify])
+  }, [completeTaskMutation, fetchTasks, notify])
 
   const deleteTask = useCallback(async (id: string) => {
     await deleteTaskMutation.mutateAsync(id)
     await fetchTasks()
     notify("Daily task deleted", {type: "error"})
-  }, [deleteTaskMutation, notify])
+  }, [deleteTaskMutation, fetchTasks, notify])
 
   if (isLoading) {
     return <PageLoader />
@@ -43,7 +42,7 @@ const DailyTasksPageBuilder: FC = () => {
       tasks={tasks}
       completedCount={0}
       onAdd={(task) => { createNewTask(task) }}
-      onToggleComplete={(id) => { completeTask(id) }}
+      onToggleComplete={(id, isCompleted) => { completeTask(id, isCompleted) }}
       onDelete={(id) => { deleteTask(id) }}
     />
   )

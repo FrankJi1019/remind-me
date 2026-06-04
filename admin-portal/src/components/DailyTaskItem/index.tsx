@@ -1,25 +1,28 @@
-import { useMemo, type FC } from "react"
+import { useEffect, useMemo, type FC } from "react"
 import StandardContainer from "../../containers/StandardContainer"
 import type { DailyTask } from "../../types/domain"
 
 export interface DailyTaskItemProps {
   task: DailyTask
-  onToggleComplete: (id: string) => void
+  onToggleComplete: (id: string, isTaskCompleted: boolean) => void
   onDelete: (id: string) => void
 }
 
 const DailyTaskItem: FC<DailyTaskItemProps> = ({ task, onToggleComplete, onDelete }) => {
 
   const isCompleted = useMemo(() => {
-    return task.completionDates.some(date => {
+    const res = task.completionDates.some(date => {
+      console.log(date.toDateString())
+      console.log(new Date().toDateString())
       return date.toDateString() === new Date().toDateString()
     })
+    return res 
   }, [task])
 
   return <StandardContainer>
     <div className="flex items-center gap-3 min-h-[44px]">
       <button
-        onClick={() => onToggleComplete(task.id)}
+        onClick={() => onToggleComplete(task.id, !isCompleted)}
         className={`w-7 h-7 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${
           isCompleted
             ? "bg-indigo-500 border-indigo-500 text-white"

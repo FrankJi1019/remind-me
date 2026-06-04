@@ -32,8 +32,11 @@ export const useCreateDailyTaskMutation = () => {
 
 export const useToggleDailyTaskMutation = () => {
   const mutation = useMutation({
-    mutationFn: async (id: string) => {
-      const { data } = await apiClient.put(`tasks/${id}/complete`)
+    mutationFn: async ({id, isTaskComplete}: {id: string, isTaskComplete: boolean}) => {
+      const { data } = await apiClient.put(`tasks/${id}/complete`, {
+        isComplete: isTaskComplete,
+        datetime: new Date().toISOString()
+      })
       return data
     }
   })
