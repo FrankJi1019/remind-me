@@ -9,7 +9,6 @@ export interface PageProps {
 const navItems = [
   { label: "Habits", path: Routes.DAILY_TASKS.path, icon: "✓" },
   { label: "Email", path: Routes.EMAIL_PREVIEW.path, icon: "✉" },
-  { label: "Schedule", path: Routes.SCHEDULE.path, icon: "⏰" },
   { label: "Settings", path: Routes.SETTINGS.path, icon: "⚙" },
 ]
 

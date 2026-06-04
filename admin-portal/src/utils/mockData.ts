@@ -1,4 +1,4 @@
-import type { DailyTask, EmailPreview, Schedule, SsmParameter } from "../types/domain"
+import type { DailyTask, EmailPreview, SsmParameter } from "../types/domain"
 
 export const mockDailyTasks: DailyTask[] = [
   { id: "1", name: "Drink 8 glasses of water", icon: "💧", isCompleted: false },
@@ -33,10 +33,9 @@ export const mockEmailPreview: EmailPreview = {
   </div>`,
 }
 
-export const mockSchedule: Schedule = {
+export const mockSchedule = {
   nextEmailTime: "2026-06-03T07:00:00+12:00",
   timezone: "Pacific/Auckland",
-  isSkipped: false,
 }
 
 export const mockSsmParameters: SsmParameter[] = [

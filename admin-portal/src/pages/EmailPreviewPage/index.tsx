@@ -4,6 +4,7 @@ import EmailPreviewPage from "./EmailPreviewPage"
 import PageLoader from "../../components/PageLoader"
 import { useNotification } from "../../providers/NotificationProvider"
 import { useFetchEmailPreview, useSendEmailMutation } from "../../api-hooks/email"
+import { mockSchedule } from "../../utils/mockData"
 
 const EmailPreviewPageBuilder: FC = () => {
   const notify = useNotification()
@@ -17,7 +18,15 @@ const EmailPreviewPageBuilder: FC = () => {
 
   if (isLoading) return <PageLoader />
 
-  return <EmailPreviewPage email={email || ""} isSendingEmail={isSendingEmail} onSendNow={sendNowHandler} />
+  return (
+    <EmailPreviewPage
+      email={email || ""}
+      isSendingEmail={isSendingEmail}
+      onSendNow={sendNowHandler}
+      nextEmailTime={mockSchedule.nextEmailTime}
+      timezone={mockSchedule.timezone}
+    />
+  )
 }
 
 export default EmailPreviewPageBuilder

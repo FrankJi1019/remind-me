@@ -5,13 +5,23 @@ export interface EmailPreviewPageProps {
   email: string
   isSendingEmail: boolean
   onSendNow: () => void
+  nextEmailTime: string
+  timezone: string
 }
 
-const EmailPreviewPage: FC<EmailPreviewPageProps> = ({ email, isSendingEmail, onSendNow }) => {
+const EmailPreviewPage: FC<EmailPreviewPageProps> = ({ email, isSendingEmail, onSendNow, nextEmailTime, timezone }) => {
   return (
     <div className="flex flex-col h-full overflow-hidden">
       <div className="flex items-center justify-between mb-4 shrink-0">
-        <h2 className="text-xl font-semibold text-slate-800">Email Preview</h2>
+        <div>
+          <h2 className="text-xl font-semibold text-slate-800">Email Preview</h2>
+          <p className="text-sm text-slate-500 mt-1">
+            Next email: {new Date(nextEmailTime).toLocaleString("en-NZ", {
+              weekday: "long", month: "long", day: "numeric",
+              hour: "2-digit", minute: "2-digit",
+            })} ({timezone})
+          </p>
+        </div>
         <button
           onClick={onSendNow}
           disabled={isSendingEmail}

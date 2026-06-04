@@ -35,13 +35,20 @@ function buildEmail(todos: Array<Todo>, events: Array<Event>) {
     year: "numeric",
     month: "long",
     day: "numeric",
+    timeZone: "Pacific/Auckland",
   });
 
   const formatEventDate = (dateStr: string) => {
     const d = new Date(dateStr);
-    const month = d.getMonth() + 1;
-    const day = d.getDate();
-    const weekday = d.toLocaleDateString("zh-CN", { weekday: "long" });
+    const formatted = d.toLocaleDateString("zh-CN", {
+      month: "numeric",
+      day: "numeric",
+      weekday: "long",
+      timeZone: "Pacific/Auckland",
+    });
+    const month = parseInt(d.toLocaleDateString("en-CA", { month: "numeric", timeZone: "Pacific/Auckland" }));
+    const day = parseInt(d.toLocaleDateString("en-CA", { day: "numeric", timeZone: "Pacific/Auckland" }));
+    const weekday = d.toLocaleDateString("zh-CN", { weekday: "long", timeZone: "Pacific/Auckland" });
     return `${month}月${day}日（${weekday}）`;
   };
 
@@ -51,6 +58,7 @@ function buildEmail(todos: Array<Todo>, events: Array<Event>) {
       hour: "2-digit",
       minute: "2-digit",
       hour12: false,
+      timeZone: "Pacific/Auckland",
     });
   };
 
@@ -144,19 +152,20 @@ function buildEmail(todos: Array<Todo>, events: Array<Event>) {
 
   const todoRowHtml = (t: (typeof filteredTodos)[0]) => `
         <tr>
-            <td style="padding:10px 12px;border-bottom:1px solid #eee;font-size:14px;">${t.icon} ${t.task}</td>
             <td style="padding:10px 12px;border-bottom:1px solid #eee;font-size:14px;">
+                ${t.icon} ${t.task}${t.dueDate ? `<div style="margin-top:3px;padding-left:1.5em;font-size:12px;color:#6b7280;">${formatDueDate(t.dueDate)}</div>` : ""}
+            </td>
+            <td style="padding:10px 12px;border-bottom:1px solid #eee;font-size:14px;white-space:nowrap;">
                 <span style="background:${badgeColor(t.categoryColor)};color:${badgeTextColor(t.categoryColor)};padding:2px 8px;border-radius:12px;font-size:11px;">${t.category || "—"}</span>
             </td>
-            <td style="padding:10px 12px;border-bottom:1px solid #eee;font-size:14px;">
+            <td style="padding:10px 12px;border-bottom:1px solid #eee;font-size:14px;white-space:nowrap;">
                 <span style="background:${badgeColor(t.statusColor)};color:${badgeTextColor(t.statusColor)};padding:2px 8px;border-radius:12px;font-size:11px;">${t.status}</span>
             </td>
-            <td style="padding:10px 12px;border-bottom:1px solid #eee;font-size:14px;">${formatDueDate(t.dueDate)}</td>
         </tr>`;
 
   const activeTodosHtml = activeTodos.length
     ? activeTodos.map(todoRowHtml).join("")
-    : '<tr><td colspan="4" style="padding:12px;font-size:14px;color:#6b7280;">所有任务已完成 ✅</td></tr>';
+    : '<tr><td colspan="3" style="padding:12px;font-size:14px;color:#6b7280;">所有任务已完成 ✅</td></tr>';
 
   const doneTodosHtml = doneTodos.length
     ? doneTodos.map(todoRowHtml).join("")
@@ -204,9 +213,8 @@ function buildEmail(todos: Array<Todo>, events: Array<Event>) {
                     <table width="100%" cellpadding="0" cellspacing="0" class="data-table" style="border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;">
                         <tr style="background:#f9fafb;">
                             <th style="padding:8px 12px;text-align:left;font-size:12px;color:#6b7280;font-weight:600;">Task</th>
-                            <th style="padding:8px 12px;text-align:left;font-size:12px;color:#6b7280;font-weight:600;">分类</th>
-                            <th style="padding:8px 12px;text-align:left;font-size:12px;color:#6b7280;font-weight:600;">Status</th>
-                            <th style="padding:8px 12px;text-align:left;font-size:12px;color:#6b7280;font-weight:600;">截止日期</th>
+                            <th style="padding:8px 12px;text-align:left;font-size:12px;color:#6b7280;font-weight:600;white-space:nowrap;">分类</th>
+                            <th style="padding:8px 12px;text-align:left;font-size:12px;color:#6b7280;font-weight:600;white-space:nowrap;">Status</th>
                         </tr>
                         ${activeTodosHtml}
                     </table>

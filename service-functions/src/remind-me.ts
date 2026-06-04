@@ -64,7 +64,7 @@ export const handler = async (): Promise<{
       Destination: { ToAddresses: [TO_EMAIL] },
       Content: {
         Simple: {
-          Subject: { Data: "Good morning! ☀️" },
+          Subject: { Data: `☀️ 今日简报 — ${new Date().toLocaleDateString("zh-CN", { month: "long", day: "numeric", weekday: "short", timeZone: "Pacific/Auckland" })}` },
           Body: { Html: { Data: serializedEmailContent } },
         },
       },
