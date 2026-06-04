@@ -1,6 +1,7 @@
-import { useEffect, useMemo, type FC } from "react"
+import { useMemo, type FC } from "react"
 import StandardContainer from "../../containers/StandardContainer"
 import type { DailyTask } from "../../types/domain"
+import {isTaskCompleted} from '../../utils/dailyTasks'
 
 export interface DailyTaskItemProps {
   task: DailyTask
@@ -11,13 +12,8 @@ export interface DailyTaskItemProps {
 const DailyTaskItem: FC<DailyTaskItemProps> = ({ task, onToggleComplete, onDelete }) => {
 
   const isCompleted = useMemo(() => {
-    const res = task.completionDates.some(date => {
-      console.log(date.toDateString())
-      console.log(new Date().toDateString())
-      return date.toDateString() === new Date().toDateString()
-    })
-    return res 
-  }, [task])
+    return isTaskCompleted(task)
+  }, [task, isTaskCompleted])
 
   return <StandardContainer>
     <div className="flex items-center gap-3 min-h-[44px]">

@@ -1,38 +1,43 @@
 import type { FC } from "react"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import StandardContainer from "../../containers/StandardContainer"
 import type { DailyTask } from "../../types/domain"
 import DailyTaskItem from "../../components/DailyTaskItem"
+import {isTaskCompleted} from "../../utils/dailyTasks"
 
 export interface DailyTasksPageProps {
   tasks: DailyTask[]
-  completedCount: number
   onToggleComplete: (id: string, isTaskCompleted: boolean) => void
   onAdd: (task: string) => void
   onDelete: (id: string) => void
 }
 
-const DailyTasksPage: FC<DailyTasksPageProps> = ({ tasks, completedCount, onToggleComplete, onAdd, onDelete }) => {
+const DailyTasksPage: FC<DailyTasksPageProps> = ({ tasks, onToggleComplete, onAdd, onDelete }) => {
   const [isAdding, setIsAdding] = useState(false)
   const [name, setName] = useState("")
-  const [icon, setIcon] = useState("")
 
   const handleAdd = () => {
     if (!name.trim()) return
     onAdd(name)
     setName("")
-    setIcon("")
     setIsAdding(false)
   }
 
-  const progress = tasks.length > 0 ? Math.round((completedCount / tasks.length) * 100) : 0
+  const completeCount = useMemo(() => {
+    const completedTasks = tasks.filter((task) => {
+      return isTaskCompleted(task)
+    })
+    return completedTasks.length
+  }, [tasks])
+
+  const progress = tasks.length > 0 ? Math.round((completeCount / tasks.length) * 100) : 0
 
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
         <div>
           <h2 className="text-xl font-semibold text-slate-800">Daily Habits</h2>
-          <p className="text-sm text-slate-500 mt-0.5">{completedCount}/{tasks.length} completed today</p>
+          <p className="text-sm text-slate-500 mt-0.5">{completeCount}/{tasks.length} completed today</p>
         </div>
         <button
           onClick={() => setIsAdding(!isAdding)}
@@ -53,13 +58,6 @@ const DailyTasksPage: FC<DailyTasksPageProps> = ({ tasks, completedCount, onTogg
         <StandardContainer className="mb-4">
           <div className="space-y-3">
             <div className="flex items-center gap-3">
-              <input
-                value={icon}
-                onChange={(e) => setIcon(e.target.value)}
-                placeholder="🎯"
-                className="w-12 h-11 px-2 border border-slate-300 rounded-md text-center text-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                maxLength={2}
-              />
               <input
                 value={name}
                 onChange={(e) => setName(e.target.value)}

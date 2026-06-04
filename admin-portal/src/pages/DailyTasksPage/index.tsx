@@ -40,7 +40,6 @@ const DailyTasksPageBuilder: FC = () => {
   return (
     <DailyTasksPage
       tasks={tasks}
-      completedCount={0}
       onAdd={(task) => { createNewTask(task) }}
       onToggleComplete={(id, isCompleted) => { completeTask(id, isCompleted) }}
       onDelete={(id) => { deleteTask(id) }}
