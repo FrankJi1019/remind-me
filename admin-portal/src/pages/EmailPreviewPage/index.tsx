@@ -4,7 +4,9 @@ import EmailPreviewPage from "./EmailPreviewPage"
 import PageLoader from "../../components/PageLoader"
 import { useNotification } from "../../providers/NotificationProvider"
 import { useFetchEmailPreview, useSendEmailMutation } from "../../api-hooks/email"
-import { mockSchedule } from "../../utils/mockData"
+import { getNextEmailTime } from "../../utils/getNextEmailTime"
+
+const TIMEZONE = "Pacific/Auckland"
 
 const EmailPreviewPageBuilder: FC = () => {
   const notify = useNotification()
@@ -23,8 +25,8 @@ const EmailPreviewPageBuilder: FC = () => {
       email={email || ""}
       isSendingEmail={isSendingEmail}
       onSendNow={sendNowHandler}
-      nextEmailTime={mockSchedule.nextEmailTime}
-      timezone={mockSchedule.timezone}
+      nextEmailTime={getNextEmailTime()}
+      timezone={TIMEZONE}
     />
   )
 }
