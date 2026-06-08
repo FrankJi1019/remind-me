@@ -10,7 +10,8 @@ export interface SettingsPageProps {
 const SettingsPage: FC<SettingsPageProps> = ({ parameters, onSave }) => {
   return (
     <div>
-      <h2 className="text-xl font-semibold text-slate-800 mb-4">SSM Parameters</h2>
+      <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-1">SSM Parameters</h2>
+      <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">{parameters.length} parameters configured</p>
       <div className="space-y-2">
         {parameters.map((param) => (
           <SsmParameterRow key={param.key} parameter={param} onSave={onSave} />

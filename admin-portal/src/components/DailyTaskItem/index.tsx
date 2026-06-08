@@ -1,7 +1,7 @@
 import { useMemo, type FC } from "react"
 import StandardContainer from "../../containers/StandardContainer"
 import type { DailyTask } from "../../types/domain"
-import {isTaskCompleted} from '../../utils/dailyTasks'
+import { isTaskCompleted } from "../../utils/dailyTasks"
 
 export interface DailyTaskItemProps {
   task: DailyTask
@@ -10,35 +10,34 @@ export interface DailyTaskItemProps {
 }
 
 const DailyTaskItem: FC<DailyTaskItemProps> = ({ task, onToggleComplete, onDelete }) => {
+  const isCompleted = useMemo(() => isTaskCompleted(task), [task])
 
-  const isCompleted = useMemo(() => {
-    return isTaskCompleted(task)
-  }, [task, isTaskCompleted])
-
-  return <StandardContainer>
-    <div className="flex items-center gap-3 min-h-[44px]">
-      <button
-        onClick={() => onToggleComplete(task.id, !isCompleted)}
-        className={`w-7 h-7 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${
-          isCompleted
-            ? "bg-indigo-500 border-indigo-500 text-white"
-            : "border-slate-300 hover:border-indigo-400 active:border-indigo-500"
-        }`}
-        aria-label={`Mark "${task.content}" as ${isCompleted ? "incomplete" : "complete"}`}
-      >
-        {isCompleted && <span className="text-xs">✓</span>}
-      </button>
-      <span className={`text-sm flex-1 ${isCompleted ? "line-through text-slate-400" : "text-slate-800"}`}>
-        {task.content}
-      </span>
-      <button
-        onClick={() => onDelete(task.id)}
-        className="text-xs text-red-400 hover:text-red-600 active:text-red-700 px-2 py-1.5"
-      >
-        Remove
-      </button>
-    </div>
-  </StandardContainer>
+  return (
+    <StandardContainer>
+      <div className="flex items-center gap-3 min-h-[44px]">
+        <button
+          onClick={() => onToggleComplete(task.id, !isCompleted)}
+          className={`w-7 h-7 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
+            isCompleted
+              ? "bg-indigo-500 border-indigo-500 text-white scale-110"
+              : "border-slate-300 dark:border-slate-600 hover:border-indigo-400 dark:hover:border-indigo-400"
+          }`}
+          aria-label={`Mark "${task.content}" as ${isCompleted ? "incomplete" : "complete"}`}
+        >
+          {isCompleted && <span className="text-xs">✓</span>}
+        </button>
+        <span className={`text-sm flex-1 transition-colors ${isCompleted ? "line-through text-slate-400 dark:text-slate-500" : "text-slate-800 dark:text-slate-200"}`}>
+          {task.content}
+        </span>
+        <button
+          onClick={() => onDelete(task.id)}
+          className="text-xs text-slate-400 hover:text-red-500 dark:hover:text-red-400 px-2 py-1.5 transition-colors"
+        >
+          Remove
+        </button>
+      </div>
+    </StandardContainer>
+  )
 }
 
 export default DailyTaskItem

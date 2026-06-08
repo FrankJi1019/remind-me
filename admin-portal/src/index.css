@@ -1,1 +1,17 @@
 @import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-surface: #f8f8f6;
+  --color-surface-card: #f1f0ed;
+}
+
+/* Softer light theme base */
+:root:not(.dark) {
+  --tw-bg-opacity: 1;
+}
+
+:root:not(.dark) body {
+  background-color: var(--color-surface);
+}
