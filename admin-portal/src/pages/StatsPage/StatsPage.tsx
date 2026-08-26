@@ -50,8 +50,6 @@ const StatCard: FC<StatCardProps> = ({ icon, label, value, hint, tone = "default
 )
 
 const StatsPage: FC<StatsPageProps> = ({ stats }) => {
-  const maxSent = Math.max(1, ...stats.daily.map((d) => d.sent))
-
   return (
     <div className="space-y-6">
       {/* Heading */}
@@ -86,20 +84,21 @@ const StatsPage: FC<StatsPageProps> = ({ stats }) => {
 
       {/* Stat grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <StatCard icon="send" label="Total sent" value={String(stats.totalSent)} hint={`last ${stats.daysTracked} days`} />
         <StatCard
           icon="gauge"
           label="Success rate"
           value={`${stats.successRate}%`}
+          hint="of days that ran"
           tone={stats.successRate >= 99 ? "success" : stats.successRate >= 90 ? "default" : "warning"}
         />
-        <StatCard icon="clock" label="Avg duration" value={formatDuration(stats.avgDurationMs)} hint="per send" />
+        <StatCard icon="success" label="Days sent OK" value={String(stats.successDays)} hint={`last ${stats.daysTracked} days`} tone="success" />
         <StatCard
           icon="warning"
-          label="Errors"
-          value={String(stats.totalErrors)}
-          tone={stats.totalErrors === 0 ? "success" : "warning"}
+          label="Failed days"
+          value={String(stats.failedDays)}
+          tone={stats.failedDays === 0 ? "success" : "warning"}
         />
+        <StatCard icon="clock" label="Avg duration" value={formatDuration(stats.avgDurationMs)} hint="per send" />
       </div>
 
       {/* Last sent / last error */}
@@ -124,46 +123,54 @@ const StatsPage: FC<StatsPageProps> = ({ stats }) => {
         </div>
       </div>
 
-      {/* Daily activity chart */}
+      {/* Daily activity status strip */}
       <div className="rounded-2xl border border-slate-200/60 dark:border-slate-700 bg-white dark:bg-slate-800 p-5">
-        <div className="flex items-center justify-between mb-4">
-          <p className="text-sm font-medium text-slate-900 dark:text-white">Daily activity</p>
+        <div className="flex items-center justify-between mb-1">
+          <p className="text-sm font-medium text-slate-900 dark:text-white">Daily delivery</p>
           <p className="text-xs text-slate-400 dark:text-slate-500">last {stats.daily.length} days</p>
         </div>
+        <p className="text-xs text-slate-400 dark:text-slate-500 mb-4">
+          One square per day — did that day's email go out?
+        </p>
         {stats.daily.length > 0 ? (
-          <div className="flex items-end gap-1 h-28">
-            {stats.daily.map((d) => {
-              const hasError = d.errors > 0
-              const heightPct = d.sent > 0 ? Math.max(12, (d.sent / maxSent) * 100) : 6
-              return (
-                <div
-                  key={d.date}
-                  className="group relative flex-1 flex flex-col justify-end h-full"
-                  title={`${d.date}: ${d.sent} sent${hasError ? `, ${d.errors} error(s)` : ""}`}
-                >
+          <>
+            <div className="flex gap-1">
+              {stats.daily.map((d) => {
+                const cls =
+                  d.status === "failed"
+                    ? "bg-rose-500"
+                    : d.status === "success"
+                      ? "bg-emerald-500"
+                      : "bg-slate-200 dark:bg-slate-700"
+                const label =
+                  d.status === "failed"
+                    ? "failed"
+                    : d.status === "success"
+                      ? "sent"
+                      : "no send"
+                return (
                   <div
-                    className={`w-full rounded-sm transition-colors ${
-                      hasError
-                        ? "bg-rose-400 dark:bg-rose-500"
-                        : d.sent > 0
-                          ? "bg-indigo-500 dark:bg-indigo-400 group-hover:bg-indigo-600"
-                          : "bg-slate-200 dark:bg-slate-700"
-                    }`}
-                    style={{ height: `${heightPct}%` }}
+                    key={d.date}
+                    className={`h-8 flex-1 rounded-md ${cls}`}
+                    title={`${d.date} — ${label}`}
                   />
-                </div>
-              )
-            })}
-          </div>
+                )
+              })}
+            </div>
+            <div className="flex justify-between mt-1.5 text-[11px] text-slate-400 dark:text-slate-500">
+              <span>{formatDate(stats.daily[0].date)}</span>
+              <span>{formatDate(stats.daily[stats.daily.length - 1].date)}</span>
+            </div>
+          </>
         ) : (
           <p className="text-sm text-slate-400 dark:text-slate-500 py-8 text-center">No activity recorded yet.</p>
         )}
-        <div className="flex items-center gap-4 mt-4 text-xs text-slate-400 dark:text-slate-500">
+        <div className="flex items-center gap-4 mt-4 text-xs text-slate-500 dark:text-slate-400">
           <span className="flex items-center gap-1.5">
-            <span className="h-2.5 w-2.5 rounded-sm bg-indigo-500 dark:bg-indigo-400" /> Sent
+            <span className="h-2.5 w-2.5 rounded-sm bg-emerald-500" /> Sent OK
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="h-2.5 w-2.5 rounded-sm bg-rose-400 dark:bg-rose-500" /> Error
+            <span className="h-2.5 w-2.5 rounded-sm bg-rose-500" /> Failed
           </span>
           <span className="flex items-center gap-1.5">
             <span className="h-2.5 w-2.5 rounded-sm bg-slate-200 dark:bg-slate-700" /> No send

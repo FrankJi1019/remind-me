@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "yarn build:remindme && yarn build:todo && yarn build:calendar && yarn build:assembleemail",
-    "build:remindme": "esbuild src/remind-me.ts --bundle --platform=node --target=node22 --outfile=dist/remind-me/index.js",
+    "build:remindme": "esbuild src/remind-me.ts --bundle --platform=node --target=node22 --external:@aws-sdk/* --outfile=dist/remind-me/index.js",
     "deploy:remindme": "cd dist/remind-me && zip function.zip index.js && aws lambda update-function-code --function-name remind-me --zip-file fileb://function.zip",
     "invoke:remindme": "aws lambda invoke --function-name remind-me /dev/stdout",
     "build:todo": "esbuild src/get-todos.ts --bundle --platform=node --target=node22 --outfile=dist/get-todos/index.js",
@@ -15,17 +15,19 @@
     "build:calendar": "esbuild src/get-calendar.ts --bundle --platform=node --target=node22 --outfile=dist/get-calendar/index.js",
     "deploy:calendar": "cd dist/get-calendar && zip function.zip index.js && aws lambda update-function-code --function-name get-calendar --zip-file fileb://function.zip",
     "invoke:calendar": "aws lambda invoke --function-name get-calendar /dev/stdout",
-    "build:assembleemail": "esbuild src/assemble-email.ts --bundle --platform=node --target=node22 --outfile=dist/assemble-email/index.js",
+    "build:assembleemail": "esbuild src/assemble-email.ts --bundle --platform=node --target=node22 --external:@aws-sdk/* --outfile=dist/assemble-email/index.js",
     "deploy:assembleemail": "cd dist/assemble-email && zip function.zip index.js && aws lambda update-function-code --function-name assemble-email --zip-file fileb://function.zip",
     "invoke:assembleemail": "aws lambda invoke --function-name assemble-email /dev/stdout",
     "build:managessm": "esbuild src/manage-ssm.ts --bundle --platform=node --target=node22 --outfile=dist/manage-ssm/index.js",
     "deploy:managessm": "cd dist/manage-ssm && zip function.zip index.js && aws lambda update-function-code --function-name manage-ssm --zip-file fileb://function.zip",
-    "build:emailschedule": "esbuild src/email-schedule.ts --bundle --platform=node --target=node22 --outfile=dist/email-schedule/index.js",
+    "build:emailschedule": "esbuild src/email-schedule.ts --bundle --platform=node --target=node22 --external:@aws-sdk/* --outfile=dist/email-schedule/index.js",
     "deploy:emailschedule": "cd dist/email-schedule && zip function.zip index.js && aws lambda update-function-code --function-name email-schedule --zip-file fileb://function.zip",
     "build:emailstats": "esbuild src/email-stats.ts --bundle --platform=node --target=node22 --external:@aws-sdk/* --outfile=dist/email-stats/index.js",
     "deploy:emailstats": "cd dist/email-stats && zip function.zip index.js && aws lambda update-function-code --function-name email-stats --zip-file fileb://function.zip",
     "build:emaillogs": "esbuild src/email-logs.ts --bundle --platform=node --target=node22 --external:@aws-sdk/* --outfile=dist/email-logs/index.js",
-    "deploy:emaillogs": "cd dist/email-logs && zip function.zip index.js && aws lambda update-function-code --function-name email-logs --zip-file fileb://function.zip"
+    "deploy:emaillogs": "cd dist/email-logs && zip function.zip index.js && aws lambda update-function-code --function-name email-logs --zip-file fileb://function.zip",
+    "build:emailtemplate": "esbuild src/email-template.ts --bundle --platform=node --target=node22 --external:@aws-sdk/* --outfile=dist/email-template/index.js",
+    "deploy:emailtemplate": "cd dist/email-template && zip function.zip index.js && aws lambda update-function-code --function-name email-template --zip-file fileb://function.zip"
   },
   "repository": {
     "type": "git",
@@ -58,6 +60,7 @@
     "@google-cloud/local-auth": "^2.1.1",
     "@googleapis/calendar": "^14.3.0",
     "@notionhq/client": "^5.22.0",
-    "dotenv": "^17.4.2"
+    "dotenv": "^17.4.2",
+    "handlebars": "^4.7.8"
   }
 }

@@ -1,4 +1,5 @@
 import type { FC } from "react"
+import { useState } from "react"
 import Icon from "../../components/Icon"
 
 export interface EmailPreviewPageProps {
@@ -8,9 +9,16 @@ export interface EmailPreviewPageProps {
   nextEmailTime: string
   timezone: string
   scheduleEnabled: boolean
+  hour: number
+  minute: number
   isTogglingSchedule: boolean
+  isSettingTime: boolean
   onToggleSchedule: (enabled: boolean) => void
+  onSetTime: (hour: number, minute: number) => void
 }
+
+const toTimeValue = (hour: number, minute: number): string =>
+  `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`
 
 const EmailPreviewPage: FC<EmailPreviewPageProps> = ({
   email,
@@ -19,9 +27,32 @@ const EmailPreviewPage: FC<EmailPreviewPageProps> = ({
   nextEmailTime,
   timezone,
   scheduleEnabled,
+  hour,
+  minute,
   isTogglingSchedule,
+  isSettingTime,
   onToggleSchedule,
+  onSetTime,
 }) => {
+  const serverValue = toTimeValue(hour, minute)
+  const [timeValue, setTimeValue] = useState(serverValue)
+  const [lastServerValue, setLastServerValue] = useState(serverValue)
+
+  // Adjust local state during render when the server value changes (no effect needed)
+  if (serverValue !== lastServerValue) {
+    setLastServerValue(serverValue)
+    setTimeValue(serverValue)
+  }
+
+  const isDirty = timeValue !== serverValue
+
+  const handleSaveTime = () => {
+    const [h, m] = timeValue.split(":").map(Number)
+    if (Number.isInteger(h) && Number.isInteger(m)) {
+      onSetTime(h, m)
+    }
+  }
+
   const formattedNext = new Date(nextEmailTime).toLocaleString("en-NZ", {
     weekday: "short",
     month: "short",
@@ -56,30 +87,62 @@ const EmailPreviewPage: FC<EmailPreviewPageProps> = ({
         </button>
       </div>
 
-      {/* Schedule toggle */}
-      <div className="flex items-center justify-between gap-4 shrink-0 rounded-2xl border border-slate-200/60 dark:border-slate-700 bg-white dark:bg-slate-800 px-5 py-4">
-        <div>
-          <p className="text-sm font-medium text-slate-900 dark:text-white">Daily scheduled email</p>
-          <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
-            {scheduleEnabled ? "Sending automatically every day" : "Automatic sending is turned off"}
-          </p>
-        </div>
-        <button
-          role="switch"
-          aria-checked={scheduleEnabled}
-          aria-label="Toggle daily scheduled email"
-          disabled={isTogglingSchedule}
-          onClick={() => onToggleSchedule(!scheduleEnabled)}
-          className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
-            scheduleEnabled ? "bg-indigo-600" : "bg-slate-300 dark:bg-slate-600"
-          }`}
-        >
-          <span
-            className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${
-              scheduleEnabled ? "translate-x-5" : "translate-x-0.5"
+      {/* Schedule card */}
+      <div className="shrink-0 rounded-2xl border border-slate-200/60 dark:border-slate-700 bg-white dark:bg-slate-800 divide-y divide-slate-100 dark:divide-slate-700">
+        {/* Enable / disable */}
+        <div className="flex items-center justify-between gap-4 px-5 py-4">
+          <div>
+            <p className="text-sm font-medium text-slate-900 dark:text-white">Daily scheduled email</p>
+            <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
+              {scheduleEnabled ? "Sending automatically every day" : "Automatic sending is turned off"}
+            </p>
+          </div>
+          <button
+            role="switch"
+            aria-checked={scheduleEnabled}
+            aria-label="Toggle daily scheduled email"
+            disabled={isTogglingSchedule}
+            onClick={() => onToggleSchedule(!scheduleEnabled)}
+            className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+              scheduleEnabled ? "bg-indigo-600" : "bg-slate-300 dark:bg-slate-600"
             }`}
-          />
-        </button>
+          >
+            <span
+              className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${
+                scheduleEnabled ? "translate-x-5" : "translate-x-0.5"
+              }`}
+            />
+          </button>
+        </div>
+
+        {/* Send time */}
+        <div className="flex items-center justify-between gap-4 px-5 py-4">
+          <div>
+            <p className="text-sm font-medium text-slate-900 dark:text-white">Send time</p>
+            <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
+              {timezone} · may shift by an hour across daylight saving
+            </p>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <input
+              type="time"
+              value={timeValue}
+              onChange={(e) => setTimeValue(e.target.value)}
+              disabled={isSettingTime}
+              className="h-10 px-3 border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 rounded-lg text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
+            />
+            {isDirty && (
+              <button
+                onClick={handleSaveTime}
+                disabled={isSettingTime}
+                className="inline-flex items-center gap-2 px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Icon name={isSettingTime ? "spinner" : "check"} className="text-xs" spin={isSettingTime} />
+                Save
+              </button>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Preview card */}

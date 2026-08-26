@@ -17,6 +17,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { label: "Stats", path: Routes.STATS.path, icon: "stats" },
   { label: "Email", path: Routes.EMAIL_PREVIEW.path, icon: "email" },
+  { label: "Themes", path: Routes.THEMES.path, icon: "themes" },
   { label: "Logs", path: Routes.LOGS.path, icon: "logs" },
   { label: "Settings", path: Routes.SETTINGS.path, icon: "settings" },
 ]

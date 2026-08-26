@@ -2,6 +2,14 @@ import { SESv2Client, SendEmailCommand } from "@aws-sdk/client-sesv2";
 import { LambdaClient, InvokeCommand } from "@aws-sdk/client-lambda";
 import { SSMClient, GetParametersByPathCommand } from "@aws-sdk/client-ssm";
 
+const DEFAULT_TEMPLATE = "remind-me-daily-briefing";
+const ALLOWED_TEMPLATES = [
+  "remind-me-daily-briefing",
+  "remind-me-tech",
+  "remind-me-timeline",
+  "remind-me-digest",
+];
+
 const ses = new SESv2Client({ region: "ap-southeast-2" });
 
 async function getParameters() {
@@ -51,21 +59,23 @@ export const handler = async (): Promise<{
   statusCode: number;
   body: string;
 }> => {
-  const [emailContent, { FROM_EMAIL, TO_EMAIL }] = await Promise.all([
-    await invokeLambdaFunction("assemble-email"),
+  const [templateData, params] = await Promise.all([
+    invokeLambdaFunction("assemble-email"),
     getParameters(),
   ]);
-
-  const serializedEmailContent = emailContent instanceof Object ? JSON.stringify(emailContent) : emailContent
+  const { FROM_EMAIL, TO_EMAIL, EMAIL_TEMPLATE } = params;
+  const templateName = ALLOWED_TEMPLATES.includes(EMAIL_TEMPLATE || "")
+    ? (EMAIL_TEMPLATE as string)
+    : DEFAULT_TEMPLATE;
 
   await ses.send(
     new SendEmailCommand({
       FromEmailAddress: FROM_EMAIL,
       Destination: { ToAddresses: [TO_EMAIL] },
       Content: {
-        Simple: {
-          Subject: { Data: `☀️ 今日简报 — ${new Date().toLocaleDateString("zh-CN", { month: "long", day: "numeric", weekday: "short", timeZone: "Pacific/Auckland" })}` },
-          Body: { Html: { Data: serializedEmailContent } },
+        Template: {
+          TemplateName: templateName,
+          TemplateData: JSON.stringify(templateData),
         },
       },
     }),

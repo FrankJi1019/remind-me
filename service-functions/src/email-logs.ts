@@ -106,26 +106,46 @@ function buildRuns(events: FilteredLogEvent[]): Run[] {
   // INIT_START lines have no RequestId; attach them to the next START by timestamp order.
   const sorted = [...events].sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
 
+  // Track the run that is currently "open" (START seen, END not yet) so that
+  // log lines without a RequestId (e.g. Lambda error stack traces) can be
+  // attributed to the correct run.
+  let openRequestId: string | null = null;
+
   for (const event of sorted) {
     const msg = (event.message || "").trim();
     const ts = event.timestamp || 0;
     const idMatch = msg.match(REQUEST_ID_RE);
-    if (!idMatch) continue; // skip INIT_START and other id-less control lines
-    const requestId = idMatch[1];
-    const run = getRun(requestId);
 
-    if (msg.startsWith("START RequestId")) {
-      run.startedAt = ts;
-    } else if (msg.startsWith("END RequestId")) {
-      run.endedAt = ts;
-      if (run.status === "running") run.status = "success";
-    } else if (msg.startsWith("REPORT RequestId")) {
-      run.durationMs = num(msg, /Duration:\s*([\d.]+)\s*ms/);
-      run.billedDurationMs = num(msg, /Billed Duration:\s*([\d.]+)\s*ms/);
-      run.maxMemoryUsedMb = num(msg, /Max Memory Used:\s*([\d.]+)\s*MB/);
-      run.memorySizeMb = num(msg, /Memory Size:\s*([\d.]+)\s*MB/);
-      run.initDurationMs = num(msg, /Init Duration:\s*([\d.]+)\s*ms/);
-    } else if (classifyMessage(msg) === "app") {
+    if (idMatch) {
+      const requestId = idMatch[1];
+      const run = getRun(requestId);
+
+      if (msg.startsWith("START RequestId")) {
+        run.startedAt = ts;
+        openRequestId = requestId;
+      } else if (msg.startsWith("END RequestId")) {
+        run.endedAt = ts;
+        if (run.status === "running") run.status = "success";
+        if (openRequestId === requestId) openRequestId = null;
+      } else if (msg.startsWith("REPORT RequestId")) {
+        run.durationMs = num(msg, /Duration:\s*([\d.]+)\s*ms/);
+        run.billedDurationMs = num(msg, /Billed Duration:\s*([\d.]+)\s*ms/);
+        run.maxMemoryUsedMb = num(msg, /Max Memory Used:\s*([\d.]+)\s*MB/);
+        run.memorySizeMb = num(msg, /Memory Size:\s*([\d.]+)\s*MB/);
+        run.initDurationMs = num(msg, /Init Duration:\s*([\d.]+)\s*ms/);
+      } else if (classifyMessage(msg) === "app") {
+        run.messages.push({ timestamp: ts, message: msg });
+        if (looksLikeError(msg)) run.status = "error";
+      }
+      continue;
+    }
+
+    // No RequestId in the message. If it's a control line (INIT_START) skip it.
+    // Otherwise attribute it to the currently open run — this is where Lambda
+    // error/stack-trace lines live, which is how we detect failed runs.
+    if (classifyMessage(msg) === "control") continue;
+    if (openRequestId) {
+      const run = getRun(openRequestId);
       run.messages.push({ timestamp: ts, message: msg });
       if (looksLikeError(msg)) run.status = "error";
     }

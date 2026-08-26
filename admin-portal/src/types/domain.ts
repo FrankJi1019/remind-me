@@ -9,10 +9,31 @@ export interface SsmParameter {
   value: string
 }
 
+export interface EmailSchedule {
+  enabled: boolean
+  hour: number
+  minute: number
+  timezone: string
+}
+
+export interface EmailTemplateOption {
+  id: string
+  name: string
+  description: string
+  subject?: string
+  html?: string
+}
+
+export interface EmailTemplates {
+  templates: EmailTemplateOption[]
+  selected: string
+}
+
 export interface DailyActivityPoint {
   date: string
   sent: number
   errors: number
+  status: "success" | "failed" | "norun"
 }
 
 export interface EmailStats {
@@ -20,6 +41,8 @@ export interface EmailStats {
   longestStreak: number
   totalSent: number
   totalErrors: number
+  successDays: number
+  failedDays: number
   successRate: number
   avgDurationMs: number | null
   lastSent: string | null

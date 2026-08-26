@@ -54,14 +54,47 @@ The email is bilingual (English/Chinese), responsive, and formatted with table-b
 
 | Function | Responsibility |
 |---|---|
-| `remind-me` | Orchestrator — invokes `assemble-email`, then sends the result via SES |
-| `assemble-email` | Fetches todos + calendar events in parallel, renders the HTML email |
+| `remind-me` | Orchestrator — invokes `assemble-email` for the template data, then sends via the `remind-me-daily-briefing` SES template |
+| `assemble-email` | Fetches todos + calendar events, pre-computes the SES template data; also renders a live HTML preview from the SES template |
 | `get-todos` | Queries a Notion database for active tasks |
 | `get-calendar` | Fetches upcoming events from Google Calendar |
 | `manage-ssm` | CRUD operations for SSM Parameter Store values |
-| `email-schedule` | Reads/toggles the daily email schedule (enables/disables the `remind-me-trigger` EventBridge rule) |
+| `email-schedule` | Reads/updates the daily email schedule — on/off and send time — by editing the `remind-me-trigger` EventBridge rule |
 | `email-stats` | Derives delivery statistics (streak, totals, success rate, avg duration, daily activity) from CloudWatch metrics for `remind-me` |
 | `email-logs` | Groups `remind-me` CloudWatch log events into human-readable per-run summaries |
+| `email-template` | Lists the available email designs and gets/sets the selected one (SSM `EMAIL_TEMPLATE`) |
+
+### Email template
+
+The daily email uses **selectable SES v2 templates** — pick a design from the admin portal.
+Four designs ship today, each a genuinely different layout (not just recolours):
+
+| Template | Design |
+|---|---|
+| `remind-me-daily-briefing` | **Classic** — card layout with colour-coded tables and badges |
+| `remind-me-tech` | **Terminal** — dark developer console: monospace, prompts, shell output |
+| `remind-me-timeline` | **Timeline** — clean card with a vertical timeline rail and dotted markers |
+| `remind-me-digest` | **Digest** — feed layout with a stat summary and accent-bar item rows |
+
+All templates consume the **same template data**, so any can render the same content. The Handlebars
+sources live in `service-functions/ses-templates/`. The selected template id is stored in SSM
+(`/remind-me/EMAIL_TEMPLATE`).
+
+- `assemble-email` computes the **template data** (formatted dates, sorted/active todos, resolved
+  badge colours, due labels) and returns it as JSON. On the `GET /email/preview` path it renders the
+  **currently selected** template with Handlebars to return live preview HTML.
+- `remind-me` sends via `SendEmail` with `Content.Template`, using the selected template.
+- `email-template` (`GET/PUT /email/template`) lists designs (including each template's raw
+  Handlebars HTML) and reads/writes the selection. The admin portal's **Themes** page previews each
+  design client-side with **mock sample data** and only applies a change when you press **Confirm**.
+
+Create or update a template in AWS after editing its JSON:
+
+```bash
+aws sesv2 create-email-template --cli-input-json file://service-functions/ses-templates/<name>.json
+# or, if it already exists:
+aws sesv2 update-email-template --cli-input-json file://service-functions/ses-templates/<name>.json
+```
 
 ### Admin Portal
 
@@ -93,14 +126,20 @@ A lightweight dashboard for managing configuration and viewing system state.
 .
 ├── service-functions/
 │   ├── src/
-│   │   ├── remind-me.ts          # Orchestrator + SES send
-│   │   ├── assemble-email.ts     # Email HTML builder
+│   │   ├── remind-me.ts          # Orchestrator — sends via the SES template
+│   │   ├── assemble-email.ts     # Builds SES template data + renders preview
 │   │   ├── get-todos.ts          # Notion integration
 │   │   ├── get-calendar.ts       # Google Calendar integration
 │   │   ├── manage-ssm.ts         # SSM parameter management
-│   │   ├── email-schedule.ts     # Toggle the daily email EventBridge rule
+│   │   ├── email-schedule.ts     # Toggle / set send time of the daily email rule
 │   │   ├── email-stats.ts        # Delivery statistics from CloudWatch metrics
-│   │   └── email-logs.ts         # Human-readable per-run log summaries
+│   │   ├── email-logs.ts         # Human-readable per-run log summaries
+│   │   └── email-template.ts     # List / select the email design (SSM)
+│   ├── ses-templates/            # SES v2 email templates (source of truth)
+│   │   ├── remind-me-daily-briefing.json   # Classic
+│   │   ├── remind-me-tech.json             # Terminal
+│   │   ├── remind-me-timeline.json         # Timeline
+│   │   └── remind-me-digest.json           # Digest
 │   ├── dist/                     # esbuild output (gitignored)
 │   └── package.json
 │

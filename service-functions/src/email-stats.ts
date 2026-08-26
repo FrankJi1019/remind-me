@@ -15,6 +15,7 @@ interface DailyPoint {
   date: string; // YYYY-MM-DD (Pacific/Auckland)
   sent: number;
   errors: number;
+  status?: "success" | "failed" | "norun";
 }
 
 interface Stats {
@@ -22,12 +23,14 @@ interface Stats {
   longestStreak: number;
   totalSent: number;
   totalErrors: number;
-  successRate: number; // 0-100, rounded to 1dp
+  successDays: number;
+  failedDays: number;
+  successRate: number; // 0-100, rounded to 1dp — measured in days that ran
   avgDurationMs: number | null;
   lastSent: string | null; // ISO date (YYYY-MM-DD)
   lastError: string | null;
   daysTracked: number;
-  daily: DailyPoint[];
+  daily: Array<Required<DailyPoint>>;
 }
 
 function localDateKey(timestamp: Date): string {
@@ -118,10 +121,23 @@ async function computeStats(): Promise<Stats> {
   }
   const series = Array.from(dedup.values()).sort((a, b) => a.date.localeCompare(b.date));
 
+  // Classify each day: "failed" (any error), "success" (ran, no error), or "norun".
+  const status = (d: DailyPoint): "success" | "failed" | "norun" =>
+    d.errors > 0 ? "failed" : d.sent > 0 ? "success" : "norun";
+
+  const withStatus = series.map((d) => ({ ...d, status: status(d) }));
+
+  const successDays = withStatus.filter((d) => d.status === "success").length;
+  const failedDays = withStatus.filter((d) => d.status === "failed").length;
+  const activeDays = successDays + failedDays; // days the function actually ran
+
   const totalSent = series.reduce((acc, d) => acc + d.sent, 0);
   const totalErrors = series.reduce((acc, d) => acc + d.errors, 0);
+
+  // Success rate measured in days that ran (a daily email is a per-day event),
+  // which is robust against ad-hoc manual invocations within a single day.
   const successRate =
-    totalSent > 0 ? Math.round(((totalSent - totalErrors) / totalSent) * 1000) / 10 : 100;
+    activeDays > 0 ? Math.round((successDays / activeDays) * 1000) / 10 : 100;
 
   // Average duration across days that actually ran
   const durValues = series
@@ -132,23 +148,25 @@ async function computeStats(): Promise<Stats> {
       ? Math.round(durValues.reduce((a, b) => a + b, 0) / durValues.length)
       : null;
 
-  // Current streak: consecutive most-recent days with a successful send (sent>0, errors===0)
+  // Current streak: consecutive most-recent days that succeeded. No-run days
+  // (including today before the scheduled send) are skipped, not counted or
+  // broken; a failed day ends the streak.
   let currentStreak = 0;
-  for (let i = series.length - 1; i >= 0; i--) {
-    const d = series[i];
-    if (d.sent > 0 && d.errors === 0) currentStreak++;
-    else if (d.sent === 0) continue; // no scheduled run that day doesn't break the streak
-    else break; // a day with errors breaks it
+  for (let i = withStatus.length - 1; i >= 0; i--) {
+    const s = withStatus[i].status;
+    if (s === "norun") continue;
+    if (s === "success") currentStreak++;
+    else break;
   }
 
-  // Longest streak of successful sends (ignoring no-run days)
+  // Longest run of successful days (no-run days don't extend or break it).
   let longestStreak = 0;
   let running = 0;
-  for (const d of series) {
-    if (d.sent > 0 && d.errors === 0) {
+  for (const d of withStatus) {
+    if (d.status === "success") {
       running++;
       longestStreak = Math.max(longestStreak, running);
-    } else if (d.errors > 0) {
+    } else if (d.status === "failed") {
       running = 0;
     }
   }
@@ -163,13 +181,15 @@ async function computeStats(): Promise<Stats> {
     longestStreak,
     totalSent,
     totalErrors,
+    successDays,
+    failedDays,
     successRate,
     avgDurationMs,
     lastSent,
     lastError,
     daysTracked: LOOKBACK_DAYS,
     // Trim the daily series to the last 30 days for a compact activity chart
-    daily: series.slice(-30),
+    daily: withStatus.slice(-30),
   };
 }
 

@@ -27,6 +27,7 @@ import {
   faFileLines,
   faChevronDown,
   faMemory,
+  faPalette,
 } from "@fortawesome/free-solid-svg-icons"
 import type { IconDefinition } from "@fortawesome/fontawesome-svg-core"
 
@@ -59,6 +60,7 @@ export const icons = {
   logs: faFileLines,
   chevron: faChevronDown,
   memory: faMemory,
+  themes: faPalette,
 } satisfies Record<string, IconDefinition>
 
 export type IconName = keyof typeof icons
