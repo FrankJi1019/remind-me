@@ -19,9 +19,7 @@
     "deploy:assembleemail": "cd dist/assemble-email && zip function.zip index.js && aws lambda update-function-code --function-name assemble-email --zip-file fileb://function.zip",
     "invoke:assembleemail": "aws lambda invoke --function-name assemble-email /dev/stdout",
     "build:managessm": "esbuild src/manage-ssm.ts --bundle --platform=node --target=node22 --outfile=dist/manage-ssm/index.js",
-    "deploy:managessm": "cd dist/manage-ssm && zip function.zip index.js && aws lambda update-function-code --function-name manage-ssm --zip-file fileb://function.zip",
-    "build:dailytasks": "esbuild src/daily-tasks.ts --bundle --platform=node --target=node22 --outfile=dist/daily-tasks/index.js",
-    "deploy:dailytasks": "cd dist/daily-tasks && zip function.zip index.js && aws lambda update-function-code --function-name daily-tasks --zip-file fileb://function.zip"
+    "deploy:managessm": "cd dist/manage-ssm && zip function.zip index.js && aws lambda update-function-code --function-name manage-ssm --zip-file fileb://function.zip"
   },
   "repository": {
     "type": "git",

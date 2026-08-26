@@ -46,7 +46,7 @@ The email is bilingual (English/Chinese), responsive, and formatted with table-b
          │                           │
          ▼                           ▼
 ┌─────────────────┐       ┌─────────────────────┐
-│ SSM Param Store │       │  Lambda + DynamoDB  │
+│ SSM Param Store │       │  HTTP API (Lambda)  │
 └─────────────────┘       └─────────────────────┘
 ```
 
@@ -59,7 +59,6 @@ The email is bilingual (English/Chinese), responsive, and formatted with table-b
 | `get-todos` | Queries a Notion database for active tasks |
 | `get-calendar` | Fetches upcoming events from Google Calendar |
 | `manage-ssm` | CRUD operations for SSM Parameter Store values |
-| `daily-tasks` | Scheduled task processing backed by DynamoDB |
 
 ### Admin Portal
 
@@ -80,7 +79,6 @@ A lightweight dashboard for managing configuration and viewing system state.
 | Compute | AWS Lambda |
 | Email | AWS SES v2 |
 | Secrets | AWS SSM Parameter Store |
-| Database | AWS DynamoDB |
 | Calendar | Google Calendar API (OAuth2 refresh token) |
 | Todos | Notion API |
 | Frontend | React 19, Vite 8, Tailwind CSS 4, React Query |
@@ -96,8 +94,7 @@ A lightweight dashboard for managing configuration and viewing system state.
 │   │   ├── assemble-email.ts     # Email HTML builder
 │   │   ├── get-todos.ts          # Notion integration
 │   │   ├── get-calendar.ts       # Google Calendar integration
-│   │   ├── manage-ssm.ts         # SSM parameter management
-│   │   └── daily-tasks.ts        # DynamoDB task processing
+│   │   └── manage-ssm.ts         # SSM parameter management
 │   ├── dist/                     # esbuild output (gitignored)
 │   └── package.json
 │

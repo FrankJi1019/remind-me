@@ -1,0 +1,48 @@
+import {
+  faEnvelope,
+  faGear,
+  faBell,
+  faMoon,
+  faSun,
+  faPlus,
+  faXmark,
+  faCheck,
+  faTrashCan,
+  faPenToSquare,
+  faPaperPlane,
+  faSpinner,
+  faInbox,
+  faCircleCheck,
+  faCircleExclamation,
+  faCircleInfo,
+  faKey,
+  faSliders,
+  faClock,
+  faBars,
+} from "@fortawesome/free-solid-svg-icons"
+import type { IconDefinition } from "@fortawesome/fontawesome-svg-core"
+
+export const icons = {
+  email: faEnvelope,
+  settings: faGear,
+  bell: faBell,
+  moon: faMoon,
+  sun: faSun,
+  plus: faPlus,
+  close: faXmark,
+  check: faCheck,
+  delete: faTrashCan,
+  edit: faPenToSquare,
+  send: faPaperPlane,
+  spinner: faSpinner,
+  inbox: faInbox,
+  success: faCircleCheck,
+  error: faCircleExclamation,
+  info: faCircleInfo,
+  key: faKey,
+  parameters: faSliders,
+  clock: faClock,
+  menu: faBars,
+} satisfies Record<string, IconDefinition>
+
+export type IconName = keyof typeof icons
