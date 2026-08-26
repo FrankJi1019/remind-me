@@ -12,6 +12,7 @@ import {
   faPaperPlane,
   faSpinner,
   faInbox,
+  faCirclePause,
   faCircleCheck,
   faCircleExclamation,
   faCircleInfo,
@@ -19,6 +20,13 @@ import {
   faSliders,
   faClock,
   faBars,
+  faChartLine,
+  faFire,
+  faTriangleExclamation,
+  faGaugeHigh,
+  faFileLines,
+  faChevronDown,
+  faMemory,
 } from "@fortawesome/free-solid-svg-icons"
 import type { IconDefinition } from "@fortawesome/fontawesome-svg-core"
 
@@ -36,6 +44,7 @@ export const icons = {
   send: faPaperPlane,
   spinner: faSpinner,
   inbox: faInbox,
+  pause: faCirclePause,
   success: faCircleCheck,
   error: faCircleExclamation,
   info: faCircleInfo,
@@ -43,6 +52,13 @@ export const icons = {
   parameters: faSliders,
   clock: faClock,
   menu: faBars,
+  stats: faChartLine,
+  streak: faFire,
+  warning: faTriangleExclamation,
+  gauge: faGaugeHigh,
+  logs: faFileLines,
+  chevron: faChevronDown,
+  memory: faMemory,
 } satisfies Record<string, IconDefinition>
 
 export type IconName = keyof typeof icons

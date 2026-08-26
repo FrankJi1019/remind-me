@@ -59,6 +59,9 @@ The email is bilingual (English/Chinese), responsive, and formatted with table-b
 | `get-todos` | Queries a Notion database for active tasks |
 | `get-calendar` | Fetches upcoming events from Google Calendar |
 | `manage-ssm` | CRUD operations for SSM Parameter Store values |
+| `email-schedule` | Reads/toggles the daily email schedule (enables/disables the `remind-me-trigger` EventBridge rule) |
+| `email-stats` | Derives delivery statistics (streak, totals, success rate, avg duration, daily activity) from CloudWatch metrics for `remind-me` |
+| `email-logs` | Groups `remind-me` CloudWatch log events into human-readable per-run summaries |
 
 ### Admin Portal
 
@@ -94,7 +97,10 @@ A lightweight dashboard for managing configuration and viewing system state.
 │   │   ├── assemble-email.ts     # Email HTML builder
 │   │   ├── get-todos.ts          # Notion integration
 │   │   ├── get-calendar.ts       # Google Calendar integration
-│   │   └── manage-ssm.ts         # SSM parameter management
+│   │   ├── manage-ssm.ts         # SSM parameter management
+│   │   ├── email-schedule.ts     # Toggle the daily email EventBridge rule
+│   │   ├── email-stats.ts        # Delivery statistics from CloudWatch metrics
+│   │   └── email-logs.ts         # Human-readable per-run log summaries
 │   ├── dist/                     # esbuild output (gitignored)
 │   └── package.json
 │

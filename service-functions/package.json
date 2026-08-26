@@ -19,7 +19,13 @@
     "deploy:assembleemail": "cd dist/assemble-email && zip function.zip index.js && aws lambda update-function-code --function-name assemble-email --zip-file fileb://function.zip",
     "invoke:assembleemail": "aws lambda invoke --function-name assemble-email /dev/stdout",
     "build:managessm": "esbuild src/manage-ssm.ts --bundle --platform=node --target=node22 --outfile=dist/manage-ssm/index.js",
-    "deploy:managessm": "cd dist/manage-ssm && zip function.zip index.js && aws lambda update-function-code --function-name manage-ssm --zip-file fileb://function.zip"
+    "deploy:managessm": "cd dist/manage-ssm && zip function.zip index.js && aws lambda update-function-code --function-name manage-ssm --zip-file fileb://function.zip",
+    "build:emailschedule": "esbuild src/email-schedule.ts --bundle --platform=node --target=node22 --outfile=dist/email-schedule/index.js",
+    "deploy:emailschedule": "cd dist/email-schedule && zip function.zip index.js && aws lambda update-function-code --function-name email-schedule --zip-file fileb://function.zip",
+    "build:emailstats": "esbuild src/email-stats.ts --bundle --platform=node --target=node22 --external:@aws-sdk/* --outfile=dist/email-stats/index.js",
+    "deploy:emailstats": "cd dist/email-stats && zip function.zip index.js && aws lambda update-function-code --function-name email-stats --zip-file fileb://function.zip",
+    "build:emaillogs": "esbuild src/email-logs.ts --bundle --platform=node --target=node22 --external:@aws-sdk/* --outfile=dist/email-logs/index.js",
+    "deploy:emaillogs": "cd dist/email-logs && zip function.zip index.js && aws lambda update-function-code --function-name email-logs --zip-file fileb://function.zip"
   },
   "repository": {
     "type": "git",
@@ -40,7 +46,10 @@
     "typescript": "^6.0.3"
   },
   "dependencies": {
+    "@aws-sdk/client-cloudwatch": "^3.1057.0",
+    "@aws-sdk/client-cloudwatch-logs": "^3.1057.0",
     "@aws-sdk/client-dynamodb": "^3.1059.0",
+    "@aws-sdk/client-eventbridge": "^3.1057.0",
     "@aws-sdk/client-lambda": "^3.1057.0",
     "@aws-sdk/client-ses": "^3.1053.0",
     "@aws-sdk/client-sesv2": "^3.1053.0",

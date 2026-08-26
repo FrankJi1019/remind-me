@@ -7,9 +7,21 @@ export interface EmailPreviewPageProps {
   onSendNow: () => void
   nextEmailTime: string
   timezone: string
+  scheduleEnabled: boolean
+  isTogglingSchedule: boolean
+  onToggleSchedule: (enabled: boolean) => void
 }
 
-const EmailPreviewPage: FC<EmailPreviewPageProps> = ({ email, isSendingEmail, onSendNow, nextEmailTime, timezone }) => {
+const EmailPreviewPage: FC<EmailPreviewPageProps> = ({
+  email,
+  isSendingEmail,
+  onSendNow,
+  nextEmailTime,
+  timezone,
+  scheduleEnabled,
+  isTogglingSchedule,
+  onToggleSchedule,
+}) => {
   const formattedNext = new Date(nextEmailTime).toLocaleString("en-NZ", {
     weekday: "short",
     month: "short",
@@ -29,8 +41,8 @@ const EmailPreviewPage: FC<EmailPreviewPageProps> = ({ email, isSendingEmail, on
           <div>
             <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Email Preview</h1>
             <p className="flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-              <Icon name="clock" className="text-xs" />
-              <span>Next: {formattedNext} ({timezone})</span>
+              <Icon name={scheduleEnabled ? "clock" : "pause"} className="text-xs" />
+              <span>{scheduleEnabled ? `Next: ${formattedNext} (${timezone})` : "Scheduled sending is paused"}</span>
             </p>
           </div>
         </div>
@@ -41,6 +53,32 @@ const EmailPreviewPage: FC<EmailPreviewPageProps> = ({ email, isSendingEmail, on
         >
           <Icon name={isSendingEmail ? "spinner" : "send"} className="text-xs" spin={isSendingEmail} />
           {isSendingEmail ? "Sending…" : "Send now"}
+        </button>
+      </div>
+
+      {/* Schedule toggle */}
+      <div className="flex items-center justify-between gap-4 shrink-0 rounded-2xl border border-slate-200/60 dark:border-slate-700 bg-white dark:bg-slate-800 px-5 py-4">
+        <div>
+          <p className="text-sm font-medium text-slate-900 dark:text-white">Daily scheduled email</p>
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
+            {scheduleEnabled ? "Sending automatically every day" : "Automatic sending is turned off"}
+          </p>
+        </div>
+        <button
+          role="switch"
+          aria-checked={scheduleEnabled}
+          aria-label="Toggle daily scheduled email"
+          disabled={isTogglingSchedule}
+          onClick={() => onToggleSchedule(!scheduleEnabled)}
+          className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+            scheduleEnabled ? "bg-indigo-600" : "bg-slate-300 dark:bg-slate-600"
+          }`}
+        >
+          <span
+            className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${
+              scheduleEnabled ? "translate-x-5" : "translate-x-0.5"
+            }`}
+          />
         </button>
       </div>
 

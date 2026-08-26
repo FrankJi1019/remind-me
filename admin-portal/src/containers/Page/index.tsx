@@ -15,7 +15,9 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
+  { label: "Stats", path: Routes.STATS.path, icon: "stats" },
   { label: "Email", path: Routes.EMAIL_PREVIEW.path, icon: "email" },
+  { label: "Logs", path: Routes.LOGS.path, icon: "logs" },
   { label: "Settings", path: Routes.SETTINGS.path, icon: "settings" },
 ]
 
@@ -53,7 +55,6 @@ const Page: FC<PageProps> = ({ children }) => {
                 <NavLink
                   key={path}
                   to={path}
-                  end={path === Routes.EMAIL_PREVIEW.path}
                   className={({ isActive }) =>
                     `inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
                       isActive
@@ -84,7 +85,6 @@ const Page: FC<PageProps> = ({ children }) => {
           <NavLink
             key={path}
             to={path}
-            end={path === Routes.EMAIL_PREVIEW.path}
             className={({ isActive }) =>
               `flex flex-col items-center gap-1 px-4 py-2 rounded-lg transition-colors ${
                 isActive
