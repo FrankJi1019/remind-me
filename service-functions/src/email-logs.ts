@@ -5,7 +5,7 @@ import {
 } from "@aws-sdk/client-cloudwatch-logs";
 
 const LOG_GROUP = "/aws/lambda/remind-me";
-const LOOKBACK_DAYS = 14;
+const LOOKBACK_DAYS = 30;
 const DAY_MS = 24 * 60 * 60 * 1000;
 const MAX_RUNS = 50;
 
@@ -31,8 +31,7 @@ interface Run {
   messages: LogLine[];
 }
 
-const REQUEST_ID_RE =
-  /RequestId:\s*([0-9a-fA-F-]{36})/;
+const REQUEST_ID_RE = /RequestId:\s*([0-9a-fA-F-]{36})/;
 
 function num(source: string, re: RegExp): number | null {
   const m = source.match(re);
@@ -56,7 +55,6 @@ async function fetchEvents(): Promise<FilteredLogEvent[]> {
     );
     events.push(...(response.events || []));
     nextToken = response.nextToken;
-    // Guard against pulling an unbounded amount of history
   } while (nextToken && events.length < 10000);
 
   return events;
@@ -74,10 +72,14 @@ function classifyMessage(msg: string): "control" | "app" {
   return "app";
 }
 
-function looksLikeError(msg: string): boolean {
-  return /\b(ERROR|Task timed out|errorMessage|errorType|Unhandled|Exception|Runtime\.)\b/i.test(
-    msg
-  );
+function isInvocationFailure(msg: string): boolean {
+  if (/\bInvoke Error\b/.test(msg)) return true;
+  if (/"errorType"\s*:/.test(msg) && /"errorMessage"\s*:/.test(msg)) return true;
+  if (/\bUnhandled Promise Rejection\b/i.test(msg)) return true;
+  if (/\bRuntime\.(Unknown|ImportModuleError|HandlerNotFound|ExitError)\b/.test(msg)) return true;
+  if (/Task timed out after/i.test(msg)) return true;
+  if (/\bStatus:\s*timeout\b/i.test(msg)) return true;
+  return false;
 }
 
 function buildRuns(events: FilteredLogEvent[]): Run[] {
@@ -103,12 +105,8 @@ function buildRuns(events: FilteredLogEvent[]): Run[] {
     return run;
   };
 
-  // INIT_START lines have no RequestId; attach them to the next START by timestamp order.
   const sorted = [...events].sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
 
-  // Track the run that is currently "open" (START seen, END not yet) so that
-  // log lines without a RequestId (e.g. Lambda error stack traces) can be
-  // attributed to the correct run.
   let openRequestId: string | null = null;
 
   for (const event of sorted) {
@@ -133,21 +131,19 @@ function buildRuns(events: FilteredLogEvent[]): Run[] {
         run.maxMemoryUsedMb = num(msg, /Max Memory Used:\s*([\d.]+)\s*MB/);
         run.memorySizeMb = num(msg, /Memory Size:\s*([\d.]+)\s*MB/);
         run.initDurationMs = num(msg, /Init Duration:\s*([\d.]+)\s*ms/);
+        if (isInvocationFailure(msg)) run.status = "error";
       } else if (classifyMessage(msg) === "app") {
         run.messages.push({ timestamp: ts, message: msg });
-        if (looksLikeError(msg)) run.status = "error";
+        if (isInvocationFailure(msg)) run.status = "error";
       }
       continue;
     }
 
-    // No RequestId in the message. If it's a control line (INIT_START) skip it.
-    // Otherwise attribute it to the currently open run — this is where Lambda
-    // error/stack-trace lines live, which is how we detect failed runs.
     if (classifyMessage(msg) === "control") continue;
     if (openRequestId) {
       const run = getRun(openRequestId);
       run.messages.push({ timestamp: ts, message: msg });
-      if (looksLikeError(msg)) run.status = "error";
+      if (isInvocationFailure(msg)) run.status = "error";
     }
   }
 

@@ -48,11 +48,11 @@ const ThemesPage: FC<ThemesPageProps> = ({ templates, appliedTemplate, isApplyin
     <div className="space-y-6">
       {/* Heading */}
       <div className="flex items-center gap-3">
-        <span className="h-10 w-10 flex items-center justify-center rounded-xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 shrink-0">
+        <span className="hidden sm:flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 shrink-0">
           <Icon name="themes" />
         </span>
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Themes</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Themes</h1>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
             Preview a design with sample data, then confirm to apply it
           </p>
@@ -61,7 +61,7 @@ const ThemesPage: FC<ThemesPageProps> = ({ templates, appliedTemplate, isApplyin
 
       <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-4">
         {/* Theme list */}
-        <div className="space-y-2">
+        <div className="order-2 lg:order-none flex gap-2 overflow-x-auto pb-1 lg:block lg:space-y-2 lg:overflow-visible lg:pb-0">
           {templates.map((template) => {
             const isPending = template.id === pending
             const isApplied = template.id === appliedTemplate
@@ -70,13 +70,13 @@ const ThemesPage: FC<ThemesPageProps> = ({ templates, appliedTemplate, isApplyin
                 key={template.id}
                 onClick={() => setPending(template.id)}
                 aria-pressed={isPending}
-                className={`w-full text-left rounded-xl border p-3 transition-colors ${
+                className={`shrink-0 lg:w-full text-left rounded-xl border p-3 transition-colors ${
                   isPending
                     ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-500/10 ring-1 ring-indigo-500"
                     : "border-slate-200 dark:border-slate-600 hover:border-slate-300 dark:hover:border-slate-500 bg-white dark:bg-slate-800"
                 }`}
               >
-                <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 whitespace-nowrap lg:justify-between lg:whitespace-normal">
                   <span className={`text-sm font-medium ${isPending ? "text-indigo-700 dark:text-indigo-300" : "text-slate-900 dark:text-white"}`}>
                     {template.name}
                   </span>
@@ -86,7 +86,7 @@ const ThemesPage: FC<ThemesPageProps> = ({ templates, appliedTemplate, isApplyin
                     </span>
                   )}
                 </div>
-                <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 leading-snug">
+                <p className="hidden lg:block text-xs text-slate-400 dark:text-slate-500 mt-1 leading-snug">
                   {template.description}
                 </p>
               </button>
@@ -95,8 +95,8 @@ const ThemesPage: FC<ThemesPageProps> = ({ templates, appliedTemplate, isApplyin
         </div>
 
         {/* Preview + confirm */}
-        <div className="rounded-2xl border border-slate-200/60 dark:border-slate-700 bg-white dark:bg-slate-800 overflow-hidden flex flex-col">
-          <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-slate-100 dark:border-slate-700">
+        <div className="order-1 lg:order-none rounded-2xl border border-slate-200/60 dark:border-slate-700 bg-white dark:bg-slate-800 overflow-hidden flex flex-col">
+          <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 border-b border-slate-100 dark:border-slate-700">
             <div className="flex items-center gap-2 min-w-0">
               <Icon name="email" className="text-xs text-slate-400 shrink-0" />
               <span className="text-sm font-medium text-slate-900 dark:text-white truncate">
@@ -116,7 +116,7 @@ const ThemesPage: FC<ThemesPageProps> = ({ templates, appliedTemplate, isApplyin
           <iframe
             title="Email theme preview"
             srcDoc={previewHtml}
-            className="w-full flex-1 min-h-[520px] bg-white"
+            className="w-full flex-1 min-h-[70vh] lg:min-h-[520px] bg-white"
             sandbox=""
           />
         </div>

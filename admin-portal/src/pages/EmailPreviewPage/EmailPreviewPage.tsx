@@ -62,17 +62,17 @@ const EmailPreviewPage: FC<EmailPreviewPageProps> = ({
   })
 
   return (
-    <div className="flex flex-col h-[calc(100vh-8rem)] lg:h-[calc(100vh-6rem)] overflow-hidden space-y-4">
+    <div className="flex flex-col sm:h-[calc(100vh-8rem)] lg:h-[calc(100vh-6rem)] sm:overflow-hidden space-y-4">
       {/* Heading */}
-      <div className="flex items-start justify-between gap-4 shrink-0">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4 shrink-0">
         <div className="flex items-center gap-3">
-          <span className="h-10 w-10 flex items-center justify-center rounded-xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 shrink-0">
+          <span className="hidden sm:flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 shrink-0">
             <Icon name="email" />
           </span>
           <div>
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Email Preview</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Email Preview</h1>
             <p className="flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-              <Icon name={scheduleEnabled ? "clock" : "pause"} className="text-xs" />
+              <Icon name={scheduleEnabled ? "clock" : "pause"} className="text-xs shrink-0" />
               <span>{scheduleEnabled ? `Next: ${formattedNext} (${timezone})` : "Scheduled sending is paused"}</span>
             </p>
           </div>
@@ -80,7 +80,7 @@ const EmailPreviewPage: FC<EmailPreviewPageProps> = ({
         <button
           onClick={onSendNow}
           disabled={isSendingEmail}
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg shadow-sm shadow-indigo-600/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
+          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg shadow-sm shadow-indigo-600/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed shrink-0 self-start"
         >
           <Icon name={isSendingEmail ? "spinner" : "send"} className="text-xs" spin={isSendingEmail} />
           {isSendingEmail ? "Sending…" : "Send now"}
@@ -116,7 +116,7 @@ const EmailPreviewPage: FC<EmailPreviewPageProps> = ({
         </div>
 
         {/* Send time */}
-        <div className="flex items-center justify-between gap-4 px-5 py-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 px-5 py-4">
           <div>
             <p className="text-sm font-medium text-slate-900 dark:text-white">Send time</p>
             <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
@@ -146,7 +146,7 @@ const EmailPreviewPage: FC<EmailPreviewPageProps> = ({
       </div>
 
       {/* Preview card */}
-      <div className="flex flex-col min-h-0 flex-1 rounded-2xl border border-slate-200/60 dark:border-slate-700 bg-white dark:bg-slate-800 overflow-hidden">
+      <div className="flex flex-col min-h-[70vh] sm:min-h-0 flex-1 rounded-2xl border border-slate-200/60 dark:border-slate-700 bg-white dark:bg-slate-800 overflow-hidden">
         <div className="flex items-center gap-3 px-5 py-4 border-b border-slate-100 dark:border-slate-700 shrink-0">
           <span className="h-9 w-9 flex items-center justify-center rounded-full bg-amber-100 dark:bg-amber-500/20 text-amber-500 dark:text-amber-400">
             <Icon name="sun" className="text-sm" />

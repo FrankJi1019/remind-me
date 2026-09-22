@@ -72,9 +72,9 @@ Four designs ship today, each a genuinely different layout (not just recolours):
 | Template | Design |
 |---|---|
 | `remind-me-daily-briefing` | **Classic** — card layout with colour-coded tables and badges |
-| `remind-me-tech` | **Terminal** — dark developer console: monospace, prompts, shell output |
-| `remind-me-timeline` | **Timeline** — clean card with a vertical timeline rail and dotted markers |
-| `remind-me-digest` | **Digest** — feed layout with a stat summary and accent-bar item rows |
+| `remind-me-tech` | **Boarding Pass** — the day as a travel ticket: a departures board and a task manifest |
+| `remind-me-timeline` | **Day Planner** — a planner page: ruled agenda with a time column and a checklist |
+| `remind-me-digest` | **Minimal Note** — a quiet typographic letter: no cards, just clean type on paper |
 
 All templates consume the **same template data**, so any can render the same content. The Handlebars
 sources live in `service-functions/ses-templates/`. The selected template id is stored in SSM

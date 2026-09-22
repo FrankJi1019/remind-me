@@ -37,13 +37,8 @@ export interface DailyActivityPoint {
 }
 
 export interface EmailStats {
-  currentStreak: number
-  longestStreak: number
   totalSent: number
   totalErrors: number
-  successDays: number
-  failedDays: number
-  successRate: number
   avgDurationMs: number | null
   lastSent: string | null
   lastError: string | null

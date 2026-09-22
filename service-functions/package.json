@@ -27,7 +27,10 @@
     "build:emaillogs": "esbuild src/email-logs.ts --bundle --platform=node --target=node22 --external:@aws-sdk/* --outfile=dist/email-logs/index.js",
     "deploy:emaillogs": "cd dist/email-logs && zip function.zip index.js && aws lambda update-function-code --function-name email-logs --zip-file fileb://function.zip",
     "build:emailtemplate": "esbuild src/email-template.ts --bundle --platform=node --target=node22 --external:@aws-sdk/* --outfile=dist/email-template/index.js",
-    "deploy:emailtemplate": "cd dist/email-template && zip function.zip index.js && aws lambda update-function-code --function-name email-template --zip-file fileb://function.zip"
+    "deploy:emailtemplate": "cd dist/email-template && zip function.zip index.js && aws lambda update-function-code --function-name email-template --zip-file fileb://function.zip",
+    "build:restorenotiondailytasks": "esbuild src/restore-notion-daily-tasks.ts --bundle --platform=node --target=node22 --outfile=dist/restore-notion-daily-tasks/index.js",
+    "deploy:restorenotiondailytasks": "cd dist/restore-notion-daily-tasks && zip function.zip index.js && aws lambda update-function-code --function-name restore-notion-daily-tasks --zip-file fileb://function.zip",
+    "invoke:restorenotiondailytasks": "aws lambda invoke --function-name restore-notion-daily-tasks /dev/stdout"
   },
   "repository": {
     "type": "git",

@@ -23,18 +23,18 @@ const TEMPLATES: TemplateOption[] = [
   },
   {
     id: "remind-me-tech",
-    name: "Terminal",
-    description: "Dark developer console — monospace, prompts and shell output.",
+    name: "Boarding Pass",
+    description: "Your day as a travel ticket — departures board and task manifest.",
   },
   {
     id: "remind-me-timeline",
-    name: "Timeline",
-    description: "Clean card with a vertical timeline rail and dotted markers.",
+    name: "Day Planner",
+    description: "A planner page — ruled agenda with a time column and a checklist.",
   },
   {
     id: "remind-me-digest",
-    name: "Digest",
-    description: "Feed layout with a stat summary and accent-bar item rows.",
+    name: "Minimal Note",
+    description: "A quiet typographic letter — no cards, just clean type on paper.",
   },
 ];
 
@@ -64,8 +64,6 @@ async function setSelected(id: string): Promise<void> {
   );
 }
 
-// Fetch the raw Handlebars html/subject for each template so the client can
-// render mock-data previews without hitting the live data pipeline.
 async function withTemplateContent() {
   return Promise.all(
     TEMPLATES.map(async (t) => {

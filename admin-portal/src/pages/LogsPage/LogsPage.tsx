@@ -37,6 +37,7 @@ const formatDateTime = (ms: number | null): string => {
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
+    timeZone: "Pacific/Auckland",
   })
 }
 
@@ -59,7 +60,7 @@ const formatDuration = (ms: number | null): string => {
 }
 
 const formatTime = (ms: number): string =>
-  new Date(ms).toLocaleTimeString("en-NZ", { hour: "2-digit", minute: "2-digit", second: "2-digit" })
+  new Date(ms).toLocaleTimeString("en-NZ", { hour: "2-digit", minute: "2-digit", second: "2-digit", timeZone: "Pacific/Auckland" })
 
 const RunCard: FC<{ run: EmailRun }> = ({ run }) => {
   const [expanded, setExpanded] = useState(false)
@@ -76,7 +77,7 @@ const RunCard: FC<{ run: EmailRun }> = ({ run }) => {
         <span className={`h-2.5 w-2.5 rounded-full shrink-0 ${meta.dot}`} />
 
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
             <span className="text-sm font-medium text-slate-900 dark:text-white">{formatDateTime(run.startedAt)}</span>
             <span className="text-xs text-slate-400 dark:text-slate-500">{formatRelative(run.startedAt)}</span>
           </div>
@@ -93,14 +94,14 @@ const RunCard: FC<{ run: EmailRun }> = ({ run }) => {
           </div>
         </div>
 
-        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${meta.badge}`}>
+        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium shrink-0 ${meta.badge}`}>
           <Icon name={meta.icon} className="text-[10px]" spin={run.status === "running"} />
           {meta.label}
         </span>
 
         <Icon
           name="chevron"
-          className={`text-xs text-slate-400 transition-transform ${expanded ? "rotate-180" : ""}`}
+          className={`text-xs text-slate-400 transition-transform shrink-0 ${expanded ? "rotate-180" : ""}`}
         />
       </button>
 
@@ -140,14 +141,13 @@ const LogsPage: FC<LogsPageProps> = ({ logs }) => {
 
   return (
     <div className="space-y-6">
-      {/* Heading */}
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
         <div className="flex items-center gap-3">
-          <span className="h-10 w-10 flex items-center justify-center rounded-xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 shrink-0">
+          <span className="hidden sm:flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 shrink-0">
             <Icon name="logs" />
           </span>
           <div>
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Logs</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Logs</h1>
             <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
               {logs.runs.length} run{logs.runs.length === 1 ? "" : "s"} in the last {logs.daysTracked} days
               {errorCount > 0 && <span className="text-rose-500 dark:text-rose-400"> · {errorCount} with errors</span>}
@@ -157,7 +157,7 @@ const LogsPage: FC<LogsPageProps> = ({ logs }) => {
         <button
           onClick={() => setErrorsOnly((v) => !v)}
           disabled={errorCount === 0}
-          className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors shrink-0 disabled:opacity-40 disabled:cursor-not-allowed ${
+          className={`inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors shrink-0 self-start disabled:opacity-40 disabled:cursor-not-allowed ${
             errorsOnly
               ? "bg-rose-600 text-white hover:bg-rose-700"
               : "border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700"
@@ -168,9 +168,7 @@ const LogsPage: FC<LogsPageProps> = ({ logs }) => {
         </button>
       </div>
 
-      {/* Run list */}
-      {visibleRuns.length > 0 ? (
-        <div className="space-y-2">
+      {visibleRuns.length > 0 ? (        <div className="space-y-2">
           {visibleRuns.map((run) => (
             <RunCard key={run.requestId} run={run} />
           ))}
